@@ -1,5 +1,16 @@
 package de.unistuttgart.t2.inventory;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import de.unistuttgart.t2.inventory.domain.Product;
+import de.unistuttgart.t2.inventory.repository.ProductRepository;
+
 /**
  * Service responsible for the inventory.
  * 
@@ -9,29 +20,47 @@ package de.unistuttgart.t2.inventory;
 public class InventoryService {
 
 	// TODO auto wired inventory repo
-
+	@Autowired
+	ProductRepository productRepository;
 	
 	/**
-	 * decrease number of units of given product
+	 * delete reservation with given id.
 	 * 
-	 * fails if not enough unit available
+	 * they are no sold and need not be saved any longer. 
+	 * this is retry-able. if i fail while deleting, i try again. deleting is idempotent. 
 	 * 
-	 * @param productId id of sold product
-	 * @param amount number of sold unit
+	 * @param id the reservation's id.
 	 */
-	public void decrease(String productId, int amount) {
-		//TODO
+	@Transactional
+	public void commitReservation(String id) {
+		// TODO : lock the repository
+		List<Product> products = productRepository.findAll();
+		for (Product product : products) {
+			product.commitReservation(id);
+			productRepository.save(product);
+		}
+		// TODO :  unlock repository	
 	}
-
+	
 	/**
-	 * increase number of unit of given product.
+	 * undo the reservation.
 	 * 
-	 * can not fail. 
+	 * remove the reservations from the db and increase the stock pile of the products
 	 * 
-	 * @param productId id of product
-	 * @param amount number of returned units
+	 * @param id
 	 */
-	public void increase(String productId, int amount) {
-		//TODO
+	@Transactional
+	public void undoReservation(String id) {
+		// TODO : lock the repository
+		List<Product> products = productRepository.findAll();
+		for (Product product : products) {
+			product.undoReservation(id);
+			productRepository.save(product);
+		}
+		// TODO :  unlock repository
+	}
+	
+	public Product addProduct(Product p) {
+		return productRepository.save(p);
 	}
 }

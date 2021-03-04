@@ -2,10 +2,9 @@ package de.unistuttgart.t2.inventory.saga;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.unistuttgart.t2.common.commands.CheckCreditCommand;
-import de.unistuttgart.t2.common.commands.DecreaseInventoryCommand;
-import de.unistuttgart.t2.common.commands.IncreaseInventoryCommand;
-import de.unistuttgart.t2.common.commands.UpdateInventoryCommand;
+import de.unistuttgart.t2.common.commands.CommitReservationCommand;
+import de.unistuttgart.t2.common.commands.InventoryCommand;
+import de.unistuttgart.t2.common.commands.UndoReservationCommand;
 import de.unistuttgart.t2.inventory.InventoryService;
 import io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder;
 import io.eventuate.tram.commands.consumer.CommandHandlers;
@@ -19,35 +18,39 @@ public class InventoryCommandHandler {
 	private InventoryService inventoryService;
 	
 	public CommandHandlers commandHandlers() {
-		return SagaCommandHandlersBuilder.fromChannel(UpdateInventoryCommand.channel)
-				.onMessage(IncreaseInventoryCommand.class, this::increaseInventory)
-				.onMessage(DecreaseInventoryCommand.class, this::decreaseInventory)
+		return SagaCommandHandlersBuilder.fromChannel(InventoryCommand.channel)
+				.onMessage(CommitReservationCommand.class, this::commitReservation)
+				.onMessage(UndoReservationCommand.class, this::undoReservation)
 				.build();
 	}
 	
+
 	/**
+	 * commit the previously reserved item to the actual inventory. 
 	 * 
 	 * @param cm
 	 * @return
 	 */
-	public Message increaseInventory(CommandMessage<IncreaseInventoryCommand> cm) {
-		IncreaseInventoryCommand cmd = cm.getCommand();
+	public Message undoReservation(CommandMessage<UndoReservationCommand> cm) {
 		
-		//TODO logic with failures
-		inventoryService.increase(cmd.getProductId(), cmd.getAmount());
+		UndoReservationCommand cmd = cm.getCommand();
+		inventoryService.undoReservation(cmd.getId());
+		
 		return CommandHandlerReplyBuilder.withSuccess();
 	}
 	
+	
 	/**
+	 * commit the previously reserved item to the actual inventory. 
 	 * 
 	 * @param cm
 	 * @return
 	 */
-	public Message decreaseInventory(CommandMessage<DecreaseInventoryCommand> cm) {
-		DecreaseInventoryCommand cmd = cm.getCommand();
+	public Message commitReservation(CommandMessage<CommitReservationCommand> cm) {
 		
-		//TODO logic with failures
-		inventoryService.decrease(cmd.getProductId(), cmd.getAmount());
+		CommitReservationCommand cmd = cm.getCommand();
+		inventoryService.commitReservation(cmd.getId());
+		
 		return CommandHandlerReplyBuilder.withSuccess();
 	}
 }
