@@ -2,9 +2,9 @@ package de.unistuttgart.t2.inventory.saga;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.unistuttgart.t2.common.commands.CommitReservationCommand;
-import de.unistuttgart.t2.common.commands.InventoryCommand;
-import de.unistuttgart.t2.common.commands.UndoReservationCommand;
+import de.unistuttgart.t2.common.commands.inventory.InventoryAction;
+import de.unistuttgart.t2.common.commands.inventory.InventoryCommand;
+import de.unistuttgart.t2.common.commands.inventory.InventoryCompensation;
 import de.unistuttgart.t2.inventory.InventoryService;
 import io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder;
 import io.eventuate.tram.commands.consumer.CommandHandlers;
@@ -19,8 +19,8 @@ public class InventoryCommandHandler {
 	
 	public CommandHandlers commandHandlers() {
 		return SagaCommandHandlersBuilder.fromChannel(InventoryCommand.channel)
-				.onMessage(CommitReservationCommand.class, this::commitReservation)
-				.onMessage(UndoReservationCommand.class, this::undoReservation)
+				.onMessage(InventoryAction.class, this::commitReservation)
+				.onMessage(InventoryCompensation.class, this::undoReservation)
 				.build();
 	}
 	
@@ -31,10 +31,10 @@ public class InventoryCommandHandler {
 	 * @param cm
 	 * @return
 	 */
-	public Message undoReservation(CommandMessage<UndoReservationCommand> cm) {
+	public Message undoReservation(CommandMessage<InventoryCompensation> cm) {
 		
-		UndoReservationCommand cmd = cm.getCommand();
-		inventoryService.undoReservation(cmd.getId());
+		InventoryCompensation cmd = cm.getCommand();
+		inventoryService.handleSagaCompensation("TODO");
 		
 		return CommandHandlerReplyBuilder.withSuccess();
 	}
@@ -46,10 +46,11 @@ public class InventoryCommandHandler {
 	 * @param cm
 	 * @return
 	 */
-	public Message commitReservation(CommandMessage<CommitReservationCommand> cm) {
+	public Message commitReservation(CommandMessage<InventoryAction> cm) {
 		
-		CommitReservationCommand cmd = cm.getCommand();
-		inventoryService.commitReservation(cmd.getId());
+		InventoryAction cmd = cm.getCommand();
+		// do somethign with return value, such that you can deside on sucess on failure
+		if inventoryService.handleSagaAction("TODO");
 		
 		return CommandHandlerReplyBuilder.withSuccess();
 	}

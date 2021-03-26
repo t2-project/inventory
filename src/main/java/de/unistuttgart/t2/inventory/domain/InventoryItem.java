@@ -1,6 +1,7 @@
 package de.unistuttgart.t2.inventory.domain;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
@@ -10,7 +11,7 @@ import org.springframework.data.annotation.Id;
  * @author maumau
  *
  */
-public class Product {
+public class InventoryItem {
 	@Id
 	private String id;
 	private String name;
@@ -18,22 +19,23 @@ public class Product {
 
 	// number units of this product.
 	// the 'true' number of products is amount + all reservations.
-	private int amount;
+	private int units;
 
 	private double price;
 
+	// sessionid -> units
 	private Map<String, Integer> reservations;
 
 	
-	public Product() {
+	public InventoryItem() {
 	}
 
-	public Product(String id, String name, String description, int amount, double price, Map<String, Integer> reservations) {
+	public InventoryItem(String id, String name, String description, int units, double price, Map<String, Integer> reservations) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
-		this.amount = amount;
+		this.units = units;
 		this.price = price;
 		this.reservations = reservations;
 	}
@@ -62,12 +64,12 @@ public class Product {
 		this.description = description;
 	}
 
-	public int getAmount() {
-		return amount;
+	public int getUnits() {
+		return units;
 	}
 
-	public void setAmount(int amount) {
-		this.amount = amount;
+	public void setUnits(int units) {
+		this.units = units;
 	}
 
 	public double getPrice() {
@@ -88,34 +90,21 @@ public class Product {
 
 	@Override
 	public String toString() {
-		return this.id + ", " + this.name + ", " + this.description + ", " + this.amount + ", " + this.price;
+		return this.id + ", " + this.name + ", " + this.description + ", " + this.units + ", " + this.price;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof Product)) {
+		if (!(o instanceof InventoryItem)) {
 			return false;
 		}
 
-		return this.id.equals(((Product) o).id) && this.name.equals(((Product) o).name) && this.description.equals(((Product) o).description)
-				&& this.amount == ((Product) o).amount && this.price == ((Product) o).price && this.reservations.equals(((Product) o).reservations);
+		return this.id.equals(((InventoryItem) o).id) && this.name.equals(((InventoryItem) o).name) && this.description.equals(((InventoryItem) o).description)
+				&& this.units == ((InventoryItem) o).units && this.price == ((InventoryItem) o).price && this.reservations.equals(((InventoryItem) o).reservations);
 	}
 	
-	/**
-	 * 
-	 * @param reservationId
-	 */
-	public void undoReservation(String reservationId) {
-		int numberOfReservedItems =  reservations.get(reservationId);
-		this.amount += numberOfReservedItems;
-		reservations.remove(reservationId);
-	}
-	
-	/**
-	 * 
-	 * @param reservationId
-	 */
-	public void commitReservation(String reservationId) {
-		reservations.remove(reservationId);
+	public int getAvailableUnits() {
+		int available = units - reservations.values().stream().reduce(0, Integer::sum); 
+		return (units > 0 ? available : 0);
 	}
 }

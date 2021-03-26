@@ -20,7 +20,7 @@ import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 
 import de.unistuttgart.t2.inventory.InventoryService;
-import de.unistuttgart.t2.inventory.domain.Product;
+import de.unistuttgart.t2.inventory.domain.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 
 @DataMongoTest
@@ -36,10 +36,10 @@ public class RepositoryTests {
 		reserved.put("bar", 64);
 		
 		
-		Product p = new Product("25", "black tea", "black as your soul", 200, 0.50, reserved);
+		InventoryItem p = new InventoryItem("25", "black tea", "black as your soul", 200, 0.50, reserved);
 		String id = inventoryService.addProduct(p).getId();
 		
-		List<Product> products = productRepository.findAll(); 
+		List<InventoryItem> products = productRepository.findAll(); 
 		
 		assertEquals(1, products.size());
 		assertEquals(p, products.get(0));
