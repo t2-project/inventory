@@ -34,7 +34,7 @@ public class InventoryCommandHandler {
 	public Message undoReservation(CommandMessage<InventoryCompensation> cm) {
 		
 		InventoryCompensation cmd = cm.getCommand();
-		inventoryService.handleSagaCompensation("TODO");
+		inventoryService.handleSagaCompensation();
 		
 		return CommandHandlerReplyBuilder.withSuccess();
 	}
@@ -47,10 +47,9 @@ public class InventoryCommandHandler {
 	 * @return
 	 */
 	public Message commitReservation(CommandMessage<InventoryAction> cm) {
-		
+
 		InventoryAction cmd = cm.getCommand();
-		// do somethign with return value, such that you can deside on sucess on failure
-		if inventoryService.handleSagaAction("TODO");
+		inventoryService.handleSagaAction();
 		
 		return CommandHandlerReplyBuilder.withSuccess();
 	}

@@ -51,16 +51,9 @@ public class InventoryService {
 	 * 
 	 * @param id the reservation's id.
 	 */
-	//@Transactional
 	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public void handleSagaAction(String id, CartContent content) {
-		for (String productId : content.getProducts()) {
-			InventoryItem item = productRepository.findById(productId).get();
-			if (item.getAvailableUnits() > content.getUnits(productId)) {
-				item.getReservations().put(id, content.getUnits(productId));
-			} 
-			
-		}
+	public void handleSagaAction() {
+		// TODO i don't even know whether inventory is still part of the saga
 	}
 
 	/**
@@ -71,9 +64,9 @@ public class InventoryService {
 	 * 
 	 * @param id
 	 */
-	@Transactional
-	public void handleSagaCompensation(String id) {
-		// TODO 
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public void handleSagaCompensation() {
+		// TODO i don't even know whether inventory is still part of the saga
 	}
 
 	// THINGS THAT ARE NOT SAGA RELATED
