@@ -1,22 +1,20 @@
-package de.unistuttgart.t2.payment.repository;
+package de.unistuttgart.t2.inventory;
 
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import de.unistuttgart.t2.inventory.InventoryService;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 
-@Configuration
+@SpringBootConfiguration
 @EnableAutoConfiguration
 @EnableMongoRepositories(basePackageClasses = {ProductRepository.class})
 public class TestContext {
-
 	@Bean
-	public InventoryService inventoryService() {
+	InventoryService inventoryService() {
 		return new InventoryService();
 	}
-
 	
 }
