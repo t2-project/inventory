@@ -1,9 +1,13 @@
 package de.unistuttgart.t2.inventory.domain;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A Product of the Store.
@@ -13,14 +17,19 @@ import org.springframework.data.annotation.Id;
  */
 public class InventoryItem {
 	@Id
+	@JsonProperty("id")
 	private String id;
+	@JsonProperty("name")
 	private String name;
+	@JsonProperty("description")
 	private String description;
 
 	// number units of this product.
 	// the 'true' number of products is amount + all reservations.
+	@JsonProperty("units")
 	private int units;
 
+	@JsonProperty("price")
 	private double price;
 
 	// sessionid -> units
@@ -28,8 +37,20 @@ public class InventoryItem {
 
 	
 	public InventoryItem() {
+		this.reservations = new HashMap<String, Integer>();
 	}
 
+	@JsonCreator
+	public InventoryItem(String id, String name, String description, int units, double price) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.units = units;
+		this.price = price;
+		this.reservations = new HashMap<String, Integer>();
+	}
+	
 	public InventoryItem(String id, String name, String description, int units, double price, Map<String, Integer> reservations) {
 		super();
 		this.id = id;
@@ -37,7 +58,7 @@ public class InventoryItem {
 		this.description = description;
 		this.units = units;
 		this.price = price;
-		this.reservations = reservations;
+		this.reservations = new HashMap<>(reservations);
 	}
 
 	public String getId() {
@@ -85,7 +106,7 @@ public class InventoryItem {
 	}
 
 	public void setReservations(Map<String, Integer> reservations) {
-		this.reservations = reservations;
+		this.reservations = new HashMap<>(reservations);
 	}
 
 	@Override
@@ -105,6 +126,14 @@ public class InventoryItem {
 	
 	public int getAvailableUnits() {
 		int available = units - reservations.values().stream().reduce(0, Integer::sum); 
-		return (units > 0 ? available : 0);
+		return (available > 0 ? available : 0);
+	}
+	
+	public void addReservation(String id, int units) {
+		if (units > getAvailableUnits() || units <= 0) {
+			return;
+		}
+		int newUnits = units + reservations.getOrDefault(id, 0);
+		reservations.put(id, newUnits);
 	}
 }

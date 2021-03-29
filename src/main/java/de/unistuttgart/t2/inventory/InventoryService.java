@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import de.unistuttgart.t2.common.domain.CartContent;
 import de.unistuttgart.t2.common.domain.Product;
 import de.unistuttgart.t2.inventory.domain.InventoryItem;
-import de.unistuttgart.t2.inventory.exception.ProductNotFoundException;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 import javassist.NotFoundException;
 
@@ -68,30 +67,18 @@ public class InventoryService {
 	public void handleSagaCompensation() {
 		// TODO i don't even know whether inventory is still part of the saga
 	}
-
-	// THINGS THAT ARE NOT SAGA RELATED
 	
-	public InventoryItem addProduct(InventoryItem p) {
-		return productRepository.save(p);
-	}
-
-	public Optional<InventoryItem> getProductEntity(final String pid) {
-		// no lock, 'cause only read
-		return productRepository.findById(pid);
-	}
-
-	public Product getProduct(final String pid) {
-		InventoryItem p = getProductEntity(pid)
-				.orElseThrow(() -> new ProductNotFoundException("Product with id " + pid + " not found."));
-		return new Product(p.getId(), p.getName(), p.getUnits(), p.getPrice());
-	}
-	
-	public List<Product> getAllProducts() {
-		List<Product> rval = new ArrayList<>();
-		List<InventoryItem> entities = productRepository.findAll();
-		for (InventoryItem p : entities) {
-			rval.add(new Product(p.getId(), p.getName(), p.getUnits(), p.getPrice()));
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public void makeReservation(String productId, String sessionId, int units) throws NoSuchElementException{
+		if (productId == null || sessionId == null || units < 0) {
+			throw new IllegalArgumentException();
 		}
-		return rval;
+		InventoryItem item = productRepository.findById(productId).orElseThrow(() -> new NoSuchElementException());
+		if (item.getAvailableUnits() > units) {
+			item.addReservation(sessionId, units);
+			productRepository.save(item);
+		} else {
+			throw new IllegalArgumentException(); // do something better....
+		}
 	}
 }
