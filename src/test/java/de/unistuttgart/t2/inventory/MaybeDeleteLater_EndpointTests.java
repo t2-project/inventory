@@ -36,16 +36,14 @@ import de.unistuttgart.t2.common.domain.Product;
 import de.unistuttgart.t2.inventory.domain.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 
-@ExtendWith(SpringExtension.class)
+
 @ContextConfiguration(classes = TestContext.class)
-//@SpringBootTest(classes = {TestContext.class}, webEnvironment = WebEnvironment.RANDOM_PORT)
-//@DataMongoTest
-//@AutoConfigureWebTestClient
-//@RestClientTest()
+@DataMongoTest
 // TODO : How do i make this stupid thing NOT use the application context BUT the TESTCONTEXT?!?!?!
-class EndpointTests {
-	@LocalServerPort
-	private int port;
+class MaybeDeleteLater_EndpointTests {
+	
+	//@LocalServerPort
+	private int port = 12345; 
 
 	@Autowired
 	private RestTemplate restTemplate;
