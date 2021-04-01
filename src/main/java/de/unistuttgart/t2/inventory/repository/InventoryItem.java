@@ -1,4 +1,4 @@
-package de.unistuttgart.t2.inventory.domain;
+package de.unistuttgart.t2.inventory.repository;
 
 import java.util.HashMap;
 import java.util.Map;

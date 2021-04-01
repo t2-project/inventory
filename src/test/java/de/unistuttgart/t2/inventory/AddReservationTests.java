@@ -24,7 +24,7 @@ import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 
 import de.unistuttgart.t2.inventory.InventoryService;
-import de.unistuttgart.t2.inventory.domain.InventoryItem;
+import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 
 @DataMongoTest

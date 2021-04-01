@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unistuttgart.t2.common.domain.Product;
-import de.unistuttgart.t2.inventory.domain.InventoryItem;
+import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 
 

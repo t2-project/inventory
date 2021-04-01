@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import de.unistuttgart.t2.inventory.domain.InventoryItem;
+import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 
 /**

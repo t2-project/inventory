@@ -34,9 +34,6 @@ public class InventoryApplication {
 	public InventoryService inventoryService() {
 		return new InventoryService();
 	}
-
-	
-	//create repository beans yes/no? i guess no :x
 	
 	@Bean
 	public InventoryCommandHandler inventoryCommandHandler() {
