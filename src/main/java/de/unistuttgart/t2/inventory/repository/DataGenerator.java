@@ -18,11 +18,20 @@ public class DataGenerator {
 	@Autowired
 	ProductRepository repository;
 	
-	@Value("${inventory.size}")
-	private int inventorySIze;
+	@Value("${inventory.size default 10}")
+	protected String inventorySIzeAsString;
+	
+	protected int inventorySIze = 10;
 
 	@PostConstruct
-	private void generateProducts() {
+	protected void generateProducts() {
+		//parse size value to int (because i can only load properites as strings... i guess??)
+		try {
+			inventorySIze = Integer.parseInt(inventorySIzeAsString);
+		} catch (NumberFormatException e) {
+			LOG.info(String.format("could not parse size of \"%s\" to int. contiune with size of %d", inventorySIzeAsString, inventorySIze));
+		}
+		
 		if (repository.count() >= inventorySIze) {
 			LOG.info(String.format("repository already contains %d entries. not adding new entries.", repository.count()));
 			return;
