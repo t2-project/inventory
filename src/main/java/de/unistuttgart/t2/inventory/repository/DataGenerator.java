@@ -18,7 +18,7 @@ public class DataGenerator {
 	@Autowired
 	ProductRepository repository;
 	
-	@Value("${inventory.size default 10}")
+	@Value("${inventory.size}")
 	protected String inventorySIzeAsString;
 	
 	protected int inventorySIze = 10;
@@ -43,7 +43,7 @@ public class DataGenerator {
 			inventorySIze = PRODUCTNAMES.length;
 		}
 
-		LOG.info(String.format("repository empty. generate %d new entries.", inventorySIze));
+		LOG.info(String.format("repository too small. generate %d new entries.", inventorySIze));
 		
 		for (int i = (int) repository.count(); i < inventorySIze; i++) {
 			InventoryItem product = new InventoryItem();
