@@ -6,15 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.test.context.ContextConfiguration;
-
-import de.unistuttgart.t2.inventory.TestContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
 @DataMongoTest
-@ContextConfiguration(classes = TestContext.class)
+@ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 public class DataGeneratorTest {
 	
 	@Autowired

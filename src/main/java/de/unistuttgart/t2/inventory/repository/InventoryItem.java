@@ -2,7 +2,6 @@ package de.unistuttgart.t2.inventory.repository;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
