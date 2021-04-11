@@ -22,7 +22,7 @@ public class InventoryController {
 
 	// put, if i view it as 'updating the product'
 	// post, if i view it as 'creating new reservation....
-	@PostMapping("/reservation")
+	@PostMapping("/inventory/reservation")
 	public void addReservation(@RequestBody ReservationRequest body){
 		inventoryService.makeReservation(body.getProductId(), body.getSessionId(), body.getUnits());
 		
