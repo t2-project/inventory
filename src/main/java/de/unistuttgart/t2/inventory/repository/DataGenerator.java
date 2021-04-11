@@ -1,5 +1,8 @@
 package de.unistuttgart.t2.inventory.repository;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import de.unistuttgart.t2.common.domain.CartContent;
 
 @Component
 public class DataGenerator {
@@ -22,6 +29,15 @@ public class DataGenerator {
 	protected String inventorySIzeAsString;
 	
 	protected int inventorySIze = 10;
+	
+	RestTemplate template = new RestTemplate();
+	
+	@Value("${t2.cart.url}")
+	private String cartUrl; 
+	
+	private int cartSize = 3;
+	
+	Random random = new Random(5);
 
 	@PostConstruct
 	protected void generateProducts() {
@@ -37,8 +53,6 @@ public class DataGenerator {
 			return;
 		}
 		
-		Random random = new Random(5);
-		
 		if (inventorySIze > PRODUCTNAMES.length) {
 			inventorySIze = PRODUCTNAMES.length;
 		}
@@ -52,11 +66,49 @@ public class DataGenerator {
 			product.setUnits(random.nextInt(50));
 			product.setPrice(random.nextInt(10) + random.nextDouble());
 			product.setDescription("very nice " + PRODUCTNAMES[i] + " tea");
-
+		
 			repository.save(product);
 		}
+		
+		generateReservations();
 	}
 
+	/**
+	 * if cart service is available, generate reservations
+	 * 
+	 */
+	@Transactional
+	private void generateReservations() {
+		//assert cart availability
+		try {
+			template.getForObject(cartUrl, String.class);
+		} catch (Exception e) {
+			LOG.info("not generating reservations, because: " + e.getMessage());
+			return;
+		}
+		
+		List<InventoryItem> items = repository.findAll(); 
+		
+		for (int i = 0; i < cartSize; i++) {
+			String sessionId = "sessionid" + i;
+			int numberProductInCart = random.nextInt(10);
+			CartContent cartContent= new CartContent();
+			
+			for (int j = 0; j < numberProductInCart; j++) {
+				InventoryItem randomItem = items.get(random.nextInt(items.size()));
+				
+				int reservedUnits = random.nextInt(randomItem.getAvailableUnits());
+				
+				if (reservedUnits > 0) {
+					cartContent.getContent().put(randomItem.getId(), reservedUnits);
+					randomItem.addReservation(sessionId, reservedUnits);
+				}
+			}
+			template.put(cartUrl + sessionId, cartContent);
+			repository.saveAll(items);
+		}
+	}
+	
 	private static final String[] PRODUCTNAMES = { "Earl Grey (loose)", "Assam (loose)", "Darjeeling (loose)",
 			"Frisian Black Tee (loose)", "Anatolian Assam (loose)", "Earl Grey (20 bags)", "Assam (20 bags)",
 			"Darjeeling (20 bags)", "Ceylon (loose)", "Ceylon (20 bags)", "House blend (20 bags)",
