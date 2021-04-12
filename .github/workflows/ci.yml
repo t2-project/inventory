@@ -10,22 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-  # Show how to print unmasked GitHub secrets to the console
-    - name: Step 1 - Echo out a GitHub Actions Secret to the logs
-      run: |
-        echo "The GitHub Action Secret will be masked:  "
-        echo ${{ secrets.SECRET_TOKEN }}
-        echo "Trick to echo GitHub Actions Secret:  "
-        echo ${{secrets.SECRET_TOKEN}} | sed 's/./& /g' 
-
     - name: check out inventory
       uses: actions/checkout@v2
     - name: check out common
       uses: actions/checkout@master
       with:
         repository: t2-project/common
-        token: ${{ secrets.FOO }}
-#        token: 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
     - name: set up jdk
       uses: actions/setup-java@v2
       with:
