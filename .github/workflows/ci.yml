@@ -15,12 +15,11 @@ jobs:
       uses: actions/checkout@v2
     - run: |
         mkdir common
-        cd common
-        pwd
     - name: check out common
       uses: actions/checkout@master
       with:
         repository: t2-project/common
+        path: './common'
     - run: |
         cd ..
         pwd
