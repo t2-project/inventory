@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@master
       with:
         repository: t2/common
-        token: ${{ secrets.to_checkout_private_repos }}
+        token: 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
     - name: set up jdk
       uses: actions/setup-java@v2
       with:
