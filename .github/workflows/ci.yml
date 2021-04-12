@@ -5,7 +5,7 @@ on:
 #      - 'main'
       - ci
 
-jobs: 
+jobs:
   test:
     name: unit test
     runs-on: ubuntu-latest
@@ -24,24 +24,12 @@ jobs:
         path: './common'
     - run: |
         pwd
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
-    xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.springframework</groupId>
-    <artifactId>gs-multi-module</artifactId>
-    <version>0.1.0</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>common</module>
-        <module>inventory</module>
-    </modules>
-</project> " > pom.xml 
+        echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\"> <modelVersion>4.0.0</modelVersion> <groupId>org.springframework</groupId> <artifactId>gs-multi-module</artifactId> <version>0.1.0</version> <packaging>pom</packaging> <modules> <module>common</module> <module>inventory</module> </modules></project>" > pom.xml
     - name: set up jdk
       uses: actions/setup-java@v2
       with:
-        distribution: 'adopt' 
-        java-version: '11' 
+        distribution: 'adopt'
+        java-version: '11'
     - name: Maven Package
       run: mvn clean package
     - name: Maven Verify
