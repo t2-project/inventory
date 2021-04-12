@@ -10,7 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: check out inventory
+      uses: actions/checkout@v2
+    - name: check out common
+      uses: actions/checkout@master
+      with:
+        repository: t2/common
+        token: ${{ secrets.to_checkout_private_repos }}
     - name: set up jdk
       uses: actions/setup-java@v2
       with:
@@ -19,4 +25,4 @@ jobs:
     - name: Maven Package
       run: mvn clean package
     - name: Maven Verify
-      run: mvn clean verify -DskipTests
+      run: mvn clean verify
