@@ -24,6 +24,7 @@ jobs:
     - run: |
         pwd  
         ls -lah  
+        cat pom.xml
 #    - name: Maven Package
 #      run: mvn clean package
 #    - name: Maven Verify
