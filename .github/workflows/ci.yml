@@ -22,7 +22,8 @@ jobs:
         distribution: 'adopt' 
         java-version: '11' 
     - run: |
-        pwd    
+        pwd  
+        ls -lah  
 #    - name: Maven Package
 #      run: mvn clean package
 #    - name: Maven Verify
