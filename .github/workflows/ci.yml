@@ -20,8 +20,10 @@ jobs:
       uses: actions/setup-java@v2
       with:
         distribution: 'adopt' 
-        java-version: '11'     
-    - name: Maven Package
-      run: mvn clean package
-    - name: Maven Verify
-      run: mvn clean verify
+        java-version: '11' 
+    run: |
+        pwd    
+#    - name: Maven Package
+#      run: mvn clean package
+#    - name: Maven Verify
+#      run: mvn clean verify
