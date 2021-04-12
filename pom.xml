@@ -29,7 +29,7 @@
         <repository>
             <id>common-repo</id>
             <name>common-repo</name>
-            <url>./common</url>
+            <url>file:/common</url>
         </repository>
 	</repositories>
 
