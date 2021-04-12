@@ -2,7 +2,8 @@ name: main branch
 on:
   push:
     branches:
-      - 'main'
+#      - 'main'
+      - ci
 
 jobs: 
   test:
