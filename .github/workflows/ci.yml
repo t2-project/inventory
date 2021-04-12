@@ -12,10 +12,17 @@ jobs:
     steps:
     - name: check out inventory
       uses: actions/checkout@v2
+    - run: |
+        mkdir common
+        cd common
+        pwd
     - name: check out common
       uses: actions/checkout@master
       with:
         repository: t2-project/common
+    - run: |
+        cd ..
+        pwd
     - name: set up jdk
       uses: actions/setup-java@v2
       with:

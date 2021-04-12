@@ -25,6 +25,12 @@
 			<name>eventuate-tram-repos</name>
 			<url>https://jcenter.bintray.com/</url>
 		</repository>
+
+        <repository>
+            <id>common-repo</id>
+            <name>common-repo</name>
+            <url>./common</url>
+        </repository>
 	</repositories>
 
 	<dependencies>
