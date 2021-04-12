@@ -13,6 +13,7 @@ jobs:
     steps:
     - name: check out inventory
       uses: actions/checkout@v2
+      with:
         path: './inventory'
     - run: |
         mkdir common
