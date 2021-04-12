@@ -28,6 +28,7 @@ public class DataGeneratorTest {
 	public void setup() {
 		 generator = new DataGenerator();
 		 generator.repository = productRepository;
+		 productRepository.deleteAll();
 	}
 	
 	@AfterEach

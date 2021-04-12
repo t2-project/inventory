@@ -88,6 +88,9 @@ public class DataGenerator {
 		}
 		
 		List<InventoryItem> items = repository.findAll(); 
+		if (items.size() == 0) {
+			return;
+		}
 		
 		for (int i = 0; i < cartSize; i++) {
 			String sessionId = "sessionid" + i;
