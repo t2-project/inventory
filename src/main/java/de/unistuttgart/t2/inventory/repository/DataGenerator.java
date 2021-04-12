@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import de.unistuttgart.t2.common.domain.CartContent;
+import de.unistuttgart.t2.common.CartContent;
 
 @Component
 public class DataGenerator {

@@ -75,14 +75,14 @@ public class InventoryService {
 	 * @throws NoSuchElementException   if the product does not exist
 	 * @throws IllegalArgumentException caused by addReservation
 	 */
-	public void makeReservation(String productId, String sessionId, int units) throws NoSuchElementException {
+	public InventoryItem makeReservation(String productId, String sessionId, int units) throws NoSuchElementException {
 		if (productId == null || sessionId == null || units < 0) {
 			throw new IllegalArgumentException();
 		}
 		InventoryItem item = productRepository.findById(productId).orElseThrow(() -> new NoSuchElementException());
 
 		item.addReservation(sessionId, units);
-		productRepository.save(item);
+		return productRepository.save(item);
 
 	}
 }

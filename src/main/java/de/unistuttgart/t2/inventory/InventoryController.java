@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.unistuttgart.t2.common.domain.Product;
-import de.unistuttgart.t2.common.domain.ReservationRequest;
+import de.unistuttgart.t2.common.Product;
+import de.unistuttgart.t2.common.ReservationRequest;
+import de.unistuttgart.t2.inventory.repository.InventoryItem;
 
 @RestController
 public class InventoryController {
@@ -23,8 +24,9 @@ public class InventoryController {
 	// put, if i view it as 'updating the product'
 	// post, if i view it as 'creating new reservation....
 	@PostMapping("/inventory/reservation")
-	public void addReservation(@RequestBody ReservationRequest body){
-		inventoryService.makeReservation(body.getProductId(), body.getSessionId(), body.getUnits());
+	public Product addReservation(@RequestBody ReservationRequest body){
+		InventoryItem item = inventoryService.makeReservation(body.getProductId(), body.getSessionId(), body.getUnits());
+		return new Product(item.getId(),item.getName(),item.getAvailableUnits(),item.getPrice());
 		
 		// TODO Error handling?? 
 		// current response : {"timestamp":"2021-03-29T08:46:50.240+00:00","status":500,"error":"Internal Server Error","message":"","path":"/reservation"}
