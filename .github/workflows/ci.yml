@@ -32,7 +32,7 @@ jobs:
         pwd  
         ls -lah  
         cat pom.xml
-#    - name: Maven Package
-#      run: mvn clean package
-#    - name: Maven Verify
-#      run: mvn clean verify
+    - name: Maven Package
+      run: mvn clean package
+    - name: Maven Verify
+      run: mvn clean verify
