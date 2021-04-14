@@ -35,6 +35,8 @@ jobs:
       run: mvn clean install
     - name: Build and push (manual)
       run: |
+        ls *
+        cd inventory
         docker build -t stiesssh/inventory:test1 .
         docker push stiesssh/inventory:test1
         
