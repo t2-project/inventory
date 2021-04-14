@@ -63,7 +63,7 @@ public class DataGenerator {
 			InventoryItem product = new InventoryItem();
 
 			product.setName(PRODUCTNAMES[i]);
-			product.setUnits(random.nextInt(50));
+			product.setUnits(random.nextInt(50) + 20);
 			product.setPrice(random.nextInt(10) + random.nextDouble());
 			product.setDescription("very nice " + PRODUCTNAMES[i] + " tea");
 		
