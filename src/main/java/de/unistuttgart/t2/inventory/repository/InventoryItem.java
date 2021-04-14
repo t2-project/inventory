@@ -157,7 +157,7 @@ public class InventoryItem {
 	 */
 	public void addReservation(String id, int unitsToReserve) {
 		if (unitsToReserve > getAvailableUnits() || unitsToReserve < 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("illegal amount of units to reserve");
 		}
 		if (unitsToReserve == 0) {
 			return;

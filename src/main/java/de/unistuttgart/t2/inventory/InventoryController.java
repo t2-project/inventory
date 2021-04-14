@@ -28,7 +28,10 @@ public class InventoryController {
 		InventoryItem item = inventoryService.makeReservation(body.getProductId(), body.getSessionId(), body.getUnits());
 		return new Product(item.getId(),item.getName(),item.getAvailableUnits(),item.getPrice());
 		
-		// TODO Error handling?? 
+		// TODO Error handling!! 
 		// current response : {"timestamp":"2021-03-29T08:46:50.240+00:00","status":500,"error":"Internal Server Error","message":"","path":"/reservation"}
+		// i want to distinguish:
+		// - no units available (currently IAE)
+		// - missing element
 	}
 }

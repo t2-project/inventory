@@ -77,7 +77,7 @@ public class InventoryService {
 	 */
 	public InventoryItem makeReservation(String productId, String sessionId, int units) throws NoSuchElementException {
 		if (productId == null || sessionId == null || units < 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("productId : " + productId + ", sessionId : " + sessionId + ", units : " + units);
 		}
 		InventoryItem item = productRepository.findById(productId).orElseThrow(() -> new NoSuchElementException());
 
