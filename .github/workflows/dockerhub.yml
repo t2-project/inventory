@@ -36,11 +36,11 @@ jobs:
         java-version: '11'
     - name: Maven Install
       run: mvn clean install
-    - name: Build and push
-      id: docker_build
-      uses: docker/build-push-action@v2
-      with:
-        push: true
-        tags: user/app:latest
-    - name: Image digest
-      run: echo ${{ steps.docker_build.outputs.digest }}
+    - name: Build and push (manual
+      run: |
+        pwd
+        ls
+        docker build -t stiesssh/inventory:test1 .
+        docker push stiesssh/inventory:test1
+        
+
