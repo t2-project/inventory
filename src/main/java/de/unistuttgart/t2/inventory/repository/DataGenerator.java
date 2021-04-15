@@ -37,7 +37,7 @@ public class DataGenerator {
 	ProductRepository repository;
 	
 	@Value("${inventory.size}")
-	protected String inventorySIzeAsString;
+	protected String inventorySizeAsString;
 	
 	protected int inventorySIze = 10;
 	
@@ -54,9 +54,9 @@ public class DataGenerator {
 	public void generateProducts() {
 		//parse size value to int (because i can only load properites as strings... i guess??)
 		try {
-			inventorySIze = Integer.parseInt(inventorySIzeAsString);
+			inventorySIze = Integer.parseInt(inventorySizeAsString);
 		} catch (NumberFormatException e) {
-			LOG.info(String.format("could not parse size of \"%s\" to int. contiune with size of %d", inventorySIzeAsString, inventorySIze));
+			LOG.info(String.format("could not parse size of \"%s\" to int. contiune with size of %d", inventorySizeAsString, inventorySIze));
 		}
 		
 		if (repository.count() >= inventorySIze) {

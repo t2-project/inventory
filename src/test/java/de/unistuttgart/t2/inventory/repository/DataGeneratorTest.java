@@ -80,7 +80,7 @@ public class DataGeneratorTest {
 	public void testGenerationWithStringSize() {
 		assertEquals(0, productRepository.count());
 		assertNotNull(generator.repository);
-		generator.inventorySIzeAsString = "9";
+		generator.inventorySizeAsString = "9";
 		generator.generateProducts();
 		assertEquals(9, productRepository.count());
 	}
@@ -90,7 +90,7 @@ public class DataGeneratorTest {
 	public void testGenerationWithStringSize_ParseException() {
 		assertEquals(0, productRepository.count());
 		assertNotNull(generator.repository);
-		generator.inventorySIzeAsString = "asdgfdsf";
+		generator.inventorySizeAsString = "asdgfdsf";
 		generator.generateProducts();
 		assertEquals(10, productRepository.count());
 	}
@@ -100,7 +100,7 @@ public class DataGeneratorTest {
 	public void testGenerationWithStringSize_illegalValue() {
 		assertEquals(0, productRepository.count());
 		assertNotNull(generator.repository);
-		generator.inventorySIzeAsString = "-5";
+		generator.inventorySizeAsString = "-5";
 		generator.generateProducts();
 		assertEquals(0, productRepository.count());
 	}
