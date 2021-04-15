@@ -17,6 +17,17 @@ import org.springframework.web.client.RestTemplate;
 
 import de.unistuttgart.t2.common.CartContent;
 
+/**
+ * Puts products into the repository. If it can connect to the cart service, it
+ * also adds some content to the cart and the reservations to the respective
+ * products.
+ * 
+ * Generation is triggered after initialisation of the beans. It it also
+ * possible to trigger it manually (via http request).
+ * 
+ * @author maumau
+ *
+ */
 @Component
 public class DataGenerator {
 	
@@ -40,7 +51,7 @@ public class DataGenerator {
 	Random random = new Random(5);
 
 	@PostConstruct
-	protected void generateProducts() {
+	public void generateProducts() {
 		//parse size value to int (because i can only load properites as strings... i guess??)
 		try {
 			inventorySIze = Integer.parseInt(inventorySIzeAsString);

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.unistuttgart.t2.common.Product;
 import de.unistuttgart.t2.common.ReservationRequest;
+import de.unistuttgart.t2.inventory.repository.DataGenerator;
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 
 @RestController
@@ -20,6 +21,10 @@ public class InventoryController {
 	
 	@Autowired
 	InventoryService inventoryService;
+	
+
+	@Autowired
+	DataGenerator generator;
 
 	// put, if i view it as 'updating the product'
 	// post, if i view it as 'creating new reservation....
@@ -33,5 +38,10 @@ public class InventoryController {
 		// i want to distinguish:
 		// - no units available (currently IAE)
 		// - missing element
+	}
+	
+	@GetMapping("/generate")
+	public void generateData() {
+		generator.generateProducts();
 	}
 }
