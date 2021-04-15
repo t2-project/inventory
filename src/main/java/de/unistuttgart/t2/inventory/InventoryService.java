@@ -13,6 +13,7 @@ import de.unistuttgart.t2.inventory.repository.ProductRepository;
 
 /**
  * Service responsible for the inventory.
+ * Mostly handles interaction with the repository.
  * 
  * @author maumau
  *
@@ -26,10 +27,10 @@ public class InventoryService {
 	/**
 	 * commit reservations
 	 * 
-	 * they are no sold and need not be saved any longer. this is retry-able. if i
+	 * they are sold and need not be saved any longer. this is retry-able. if i
 	 * fail while deleting, i try again. deleting is idempotent.
 	 * 
-	 * @param id the reservation's id.
+	 * @param sessionId to identify which reservations to delete
 	 */
 	public void handleSagaAction(String sessionId) {
 		List<InventoryItem> items = productRepository.findAll();
@@ -42,8 +43,7 @@ public class InventoryService {
 	/**
 	 * delete reservations of cancelled order from repository.
 	 * 
-	 * 
-	 * @param sessionId - to identify which reservations to delete
+	 * @param sessionId to identify which reservations to delete
 	 */
 	public void handleSagaCompensation(String sessionId) {
 		List<InventoryItem> items = productRepository.findAll();
@@ -79,10 +79,9 @@ public class InventoryService {
 		if (productId == null || sessionId == null || units < 0) {
 			throw new IllegalArgumentException("productId : " + productId + ", sessionId : " + sessionId + ", units : " + units);
 		}
-		InventoryItem item = productRepository.findById(productId).orElseThrow(() -> new NoSuchElementException());
+		InventoryItem item = productRepository.findById(productId).orElseThrow(() -> new NoSuchElementException(String.format("product with id %s not found", productId)));
 
 		item.addReservation(sessionId, units);
 		return productRepository.save(item);
-
 	}
 }
