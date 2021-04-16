@@ -27,15 +27,9 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: '11'
-    - run: |
-        cd common
-        ls
     - name: build common
-      run: ls && mvn clean install
+      run: cd common && mvn clean install
     - name: install common
-      run: mvn install:install-file -Dfile=./target/common-1.0-SNAPSHOT.jar  -DpomFile=./pom.xml
-    - run: |
-        cd ../inventory
-        pwd
+      run: cd common && mvn install:install-file -Dfile=./target/common-1.0-SNAPSHOT.jar  -DpomFile=./pom.xml
     - name: verify inventory
-      run: mvn clean verify
+      run: cd inventory && mvn clean verify
