@@ -31,7 +31,7 @@ jobs:
         cd common
         ls
     - name: build common
-      run: mvn clean install
+      run: ls && mvn clean install
     - name: install common
       run: mvn install:install-file -Dfile=./target/common-1.0-SNAPSHOT.jar  -DpomFile=./pom.xml
     - run: |
