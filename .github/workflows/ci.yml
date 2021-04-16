@@ -21,12 +21,15 @@ jobs:
         path: './common'
     - run: |
         pwd
-        cd ./common
+        ls
     - name: set up jdk
       uses: actions/setup-java@v2
       with:
         distribution: 'adopt'
         java-version: '11'
+    - run: |
+        cd common
+        ls
     - name: build common
       run: mvn clean install
     - name: install common
