@@ -18,24 +18,6 @@ jobs:
       with:
         repository: t2-project/common
         path: './common'
-#
-    - name: Set env
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - name: Test
-      run: |
-        echo $RELEASE_VERSION
-        echo ${{ env.RELEASE_VERSION }}
-#
-    - name: Set output
-      id: vars
-      run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-    - name: Check output
-      env:
-        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-      run: |
-        echo $RELEASE_VERSION
-        echo ${{ steps.vars.outputs.tag }}
-#
     - name: set up jdk
       uses: actions/setup-java@v2
       with:
@@ -47,3 +29,15 @@ jobs:
       run: cd common && mvn install:install-file -Dfile=./target/common-1.0-SNAPSHOT.jar  -DpomFile=./pom.xml
     - name: verify inventory
       run: cd inventory && mvn clean verify
+#
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push (manual)
+      run: |
+        ls *
+        cd inventory
+        docker build -t stiesssh/inventory:${{ env.RELEASE_VERSION }} .
+        docker push stiesssh/inventory:${{ env.RELEASE_VERSION }}
