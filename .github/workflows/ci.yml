@@ -1,9 +1,9 @@
-name: better_mvn branch
+name: test
 on: push
 
 jobs:
   test:
-    name: unit test
+    name: test
     runs-on: ubuntu-latest
 
     steps:
