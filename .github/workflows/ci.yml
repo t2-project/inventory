@@ -37,7 +37,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build and push (manual)
       run: |
-        ls *
+        echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
         cd inventory
         docker build -t stiesssh/inventory:${{ env.RELEASE_VERSION }} .
         docker push stiesssh/inventory:${{ env.RELEASE_VERSION }}
