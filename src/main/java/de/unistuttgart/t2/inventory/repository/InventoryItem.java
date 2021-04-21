@@ -1,11 +1,14 @@
 package de.unistuttgart.t2.inventory.repository;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -30,11 +33,12 @@ public class InventoryItem {
 	@JsonProperty("price")
 	private double price;
 
-	// sessionIds -> reserved units
-	private Map<String, Integer> reservations;
+	@JsonIgnore
+	// sessionIds -> reserved units + timeout
+	private Map<String, Reservation> reservations;
 
 	public InventoryItem() {
-		this.reservations = new HashMap<String, Integer>();
+		this.reservations = new HashMap<String, Reservation>();
 	}
 
 	@JsonCreator
@@ -45,11 +49,11 @@ public class InventoryItem {
 		this.description = description;
 		this.units = units;
 		this.price = price;
-		this.reservations = new HashMap<String, Integer>();
+		this.reservations = new HashMap<String, Reservation>();
 	}
 
 	public InventoryItem(String id, String name, String description, int units, double price,
-			Map<String, Integer> reservations) {
+			Map<String, Reservation> reservations) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -99,11 +103,11 @@ public class InventoryItem {
 		this.price = price;
 	}
 
-	public Map<String, Integer> getReservations() {
+	public Map<String, Reservation> getReservations() {
 		return reservations;
 	}
 
-	public void setReservations(Map<String, Integer> reservations) {
+	public void setReservations(Map<String, Reservation> reservations) {
 		this.reservations = new HashMap<>(reservations);
 	}
 
@@ -132,8 +136,9 @@ public class InventoryItem {
 	 * @return number of not yet reserved units
 	 * @throws IllegalStateException if the reservations are too much
 	 */
+	@JsonIgnore
 	public int getAvailableUnits() {
-		int available = units - reservations.values().stream().reduce(0, Integer::sum);
+		int available = units - reservations.values().stream().map(r -> r.getUnits()).reduce(0, Integer::sum);
 		if (available < 0) {
 			throw new IllegalStateException(
 					String.format("%d units reserved, eventhough only %d are in stock", units - available, units));
@@ -162,8 +167,13 @@ public class InventoryItem {
 		if (unitsToReserve == 0) {
 			return;
 		}
-		int updatedReservationUnits = unitsToReserve + reservations.getOrDefault(id, 0);
-		reservations.put(id, updatedReservationUnits);
+		if (reservations.containsKey(id)) {
+			int updatedReservationUnits = unitsToReserve + reservations.get(id).getUnits();
+			reservations.get(id).setUnits(updatedReservationUnits);
+			reservations.get(id).renewCreationdate();
+		} else {
+			reservations.put(id, new Reservation(unitsToReserve));
+		}
 	}
 
 	/**
@@ -175,9 +185,8 @@ public class InventoryItem {
 	 * @param id
 	 */
 	public void commitReservation(String id) {
-		Integer value = reservations.remove(id);
-		if (value != null) {
-			units -= value;
+		if (reservations.containsKey(id)) {
+			units -= reservations.remove(id).getUnits();
 		}
 	}
 }

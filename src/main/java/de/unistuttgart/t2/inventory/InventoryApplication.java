@@ -5,10 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import de.unistuttgart.t2.inventory.config.ExculdeSagaConfig;
 import de.unistuttgart.t2.inventory.config.IncludeSagaConfig;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
+import de.unistuttgart.t2.inventory.repository.TimeoutCollector;
 
 @Import({IncludeSagaConfig.class, ExculdeSagaConfig.class})
 @EnableMongoRepositories(basePackageClasses = {ProductRepository.class}) // or else we wont find the mongo bean
@@ -23,4 +25,17 @@ public class InventoryApplication {
 	public InventoryService inventoryService() {
 		return new InventoryService();
 	}
+	
+    @Bean
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(5);
+        threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+        return threadPoolTaskScheduler;
+    }
+    
+    @Bean 
+    public TimeoutCollector collector() {
+    	return new TimeoutCollector();
+    }
 }

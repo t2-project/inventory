@@ -27,6 +27,7 @@ import com.mongodb.DBObject;
 import de.unistuttgart.t2.inventory.InventoryService;
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
+import de.unistuttgart.t2.inventory.repository.Reservation;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -39,8 +40,8 @@ public class AddReservationTests {
 	@BeforeEach
 	void populateRepository() {
 		InventoryItem item1 = new InventoryItem("id1", "name1", "description1", 15, 0.5,
-				Map.of("session1", 1, "session2", 2, "session3", 3));
-		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of("session1", 4));
+				Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3)));
+		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of("session1", new Reservation(4)));
 		productRepository.save(item1);
 		productRepository.save(item2);
 	}
@@ -55,11 +56,11 @@ public class AddReservationTests {
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Integer> actual = productRepository.findById("id1").get().getReservations();
+		Map<String, Reservation> actual = productRepository.findById("id1").get().getReservations();
 
 		assertEquals(4, actual.size());
 		assertTrue(actual.containsKey(key));
-		assertEquals(1, actual.get(key));
+		assertEquals(1, actual.get(key).getUnits());
 	}
 	
 	@DisplayName("testMakeNoNewReservation")
@@ -72,7 +73,7 @@ public class AddReservationTests {
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Integer> actual = productRepository.findById("id1").get().getReservations();
+		Map<String, Reservation> actual = productRepository.findById("id1").get().getReservations();
 
 		assertEquals(3, actual.size());
 		assertFalse(actual.containsKey(key));
@@ -88,11 +89,11 @@ public class AddReservationTests {
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Integer> actual = productRepository.findById("id1").get().getReservations();
+		Map<String, Reservation> actual = productRepository.findById("id1").get().getReservations();
 
 		assertEquals(3, actual.size());
 		assertTrue(actual.containsKey(key));
-		assertEquals(2, actual.get(key));
+		assertEquals(2, actual.get(key).getUnits());
 	}
 
 	@DisplayName("testUnchangedReservation")
@@ -105,11 +106,11 @@ public class AddReservationTests {
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Integer> actual = productRepository.findById("id1").get().getReservations();
+		Map<String, Reservation> actual = productRepository.findById("id1").get().getReservations();
 
 		assertEquals(3, actual.size());
 		assertTrue(actual.containsKey(key));
-		assertEquals(1, actual.get(key));
+		assertEquals(1, actual.get(key).getUnits());
 	}
 	
 	@DisplayName("testIAEProductId")

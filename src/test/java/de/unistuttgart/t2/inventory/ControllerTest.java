@@ -20,6 +20,7 @@ import de.unistuttgart.t2.common.Product;
 import de.unistuttgart.t2.common.ReservationRequest;
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
+import de.unistuttgart.t2.inventory.repository.Reservation;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -39,8 +40,8 @@ public class ControllerTest {
 	@BeforeEach
 	void populateRepository() {
 		InventoryItem item1 = new InventoryItem("id1", "name1", "description1", 15, 0.5,
-				Map.of("session1", 1, "session2", 2, "session3", 3));
-		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of("session1", 4));
+				Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3)));
+		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of("session1", new Reservation(4)));
 		productRepository.save(item1);
 		productRepository.save(item2);
 		
