@@ -124,8 +124,7 @@ public class InventoryItem {
 
 		return this.id.equals(((InventoryItem) o).id) && this.name.equals(((InventoryItem) o).name)
 				&& this.description.equals(((InventoryItem) o).description) && this.units == ((InventoryItem) o).units
-				&& this.price == ((InventoryItem) o).price
-				&& this.reservations.equals(((InventoryItem) o).reservations);
+				&& this.price == ((InventoryItem) o).price;
 	}
 
 	/**
