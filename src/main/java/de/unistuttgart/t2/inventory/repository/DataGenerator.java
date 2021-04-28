@@ -36,10 +36,8 @@ public class DataGenerator {
 	@Autowired
 	ProductRepository repository;
 	
-	@Value("${inventory.size}")
-	protected String inventorySizeAsString;
-	
-	protected int inventorySIze = 10;
+	@Value("${t2.inventory.size:20}")
+	protected int inventorySize;
 	
 	RestTemplate template = new RestTemplate();
 	
@@ -52,25 +50,18 @@ public class DataGenerator {
 
 	@PostConstruct
 	public void generateProducts() {
-		//parse size value to int (because i can only load properites as strings... i guess??)
-		try {
-			inventorySIze = Integer.parseInt(inventorySizeAsString);
-		} catch (NumberFormatException e) {
-			LOG.info(String.format("could not parse size of \"%s\" to int. contiune with size of %d", inventorySizeAsString, inventorySIze));
-		}
-		
-		if (repository.count() >= inventorySIze) {
+		if (repository.count() >= inventorySize) {
 			LOG.info(String.format("repository already contains %d entries. not adding new entries.", repository.count()));
 			return;
 		}
 		
-		if (inventorySIze > PRODUCTNAMES.length) {
-			inventorySIze = PRODUCTNAMES.length;
+		if (inventorySize > PRODUCTNAMES.length) {
+			inventorySize = PRODUCTNAMES.length;
 		}
 
-		LOG.info(String.format("repository too small. generate %d new entries.", inventorySIze));
+		LOG.info(String.format("repository too small. generate %d new entries.", inventorySize));
 		
-		for (int i = (int) repository.count(); i < inventorySIze; i++) {
+		for (int i = (int) repository.count(); i < inventorySize; i++) {
 			InventoryItem product = new InventoryItem();
 
 			product.setName(PRODUCTNAMES[i]);

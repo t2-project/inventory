@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -21,7 +21,6 @@ public class DataGeneratorTest {
 	@Autowired
 	ProductRepository productRepository;
 	
-	
 	DataGenerator generator;
 	
 	@BeforeEach
@@ -29,6 +28,7 @@ public class DataGeneratorTest {
 		 generator = new DataGenerator();
 		 generator.repository = productRepository;
 		 productRepository.deleteAll();
+		 generator.inventorySize = 10;
 	}
 	
 	@AfterEach
@@ -54,7 +54,7 @@ public class DataGeneratorTest {
 		generator.generateProducts();
 		assertEquals(10, productRepository.count());
 		
-		generator.inventorySIze = 15;
+		generator.inventorySize = 15;
 		generator.generateProducts();
 		
 		assertEquals(15, productRepository.count());
@@ -69,20 +69,10 @@ public class DataGeneratorTest {
 		generator.generateProducts();
 		assertEquals(10, productRepository.count());
 		
-		generator.inventorySIze = 4;
+		generator.inventorySize = 4;
 		generator.generateProducts();
 		
 		assertEquals(10, productRepository.count());
-	}
-	
-	// use string size if its parseable
-	@Test
-	public void testGenerationWithStringSize() {
-		assertEquals(0, productRepository.count());
-		assertNotNull(generator.repository);
-		generator.inventorySizeAsString = "9";
-		generator.generateProducts();
-		assertEquals(9, productRepository.count());
 	}
 	
 	// default to given int size of 10 if string not parseable
@@ -90,19 +80,7 @@ public class DataGeneratorTest {
 	public void testGenerationWithStringSize_ParseException() {
 		assertEquals(0, productRepository.count());
 		assertNotNull(generator.repository);
-		generator.inventorySizeAsString = "asdgfdsf";
 		generator.generateProducts();
 		assertEquals(10, productRepository.count());
 	}
-	
-	// don not fail on illegal sizes 
-	@Test
-	public void testGenerationWithStringSize_illegalValue() {
-		assertEquals(0, productRepository.count());
-		assertNotNull(generator.repository);
-		generator.inventorySizeAsString = "-5";
-		generator.generateProducts();
-		assertEquals(0, productRepository.count());
-	}
-	
 }
