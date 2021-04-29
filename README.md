@@ -21,6 +21,10 @@ spring.data.mongodb.uri | MONGO_HOST | host of the mongo db
 t2.inventory.size | INVENTORY_SIZE | number of items to be generated into the inventory repository on start up  
 t2.cart.url | T2_CART_URL | url of the cart service. must be provided to generate reservations on start up (because reservations and items in cart should be in sync)
 spring.profiles.active | SPRING_PROFILE_ACTIVE | set to 'saga' have the full saga experience. set to 'test' to run inventory solely as provider of items (no saga)
+t2.inventory.TTL |  T2_INVENTORY_TTL | time to live of reservations (in seconds)
+t2.inventory.taskRate | T2_INVENTORY_TASKRATE | rate at which the inventory checks for items that exceeded their TTL (in milliseconds)
+ 
+ setting either t2.TTL or t2.taskrate to a value less or equal to zero disables the collection of expired cart entries.
 
 property | read from env var | description |
 -------- | ----------------- | ----------- |

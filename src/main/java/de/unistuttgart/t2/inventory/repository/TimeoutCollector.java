@@ -33,9 +33,9 @@ public class TimeoutCollector {
 
 	private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-	@Value("${TTL:20}") // in seconds
+	@Value("${t2.inventory.TTL:0}") // in seconds
 	long TTL;
-	@Value("${taskRate:20000}") // in milliseconds
+	@Value("${t2.inventory.taskRate:0}") // in milliseconds
 	int taskRate;
 
 	@Autowired
@@ -46,7 +46,9 @@ public class TimeoutCollector {
 
 	@PostConstruct
 	public void schedulePeriodically() {
-		taskScheduler.scheduleAtFixedRate(new RunnableTask(), taskRate);
+		if (TTL > 0 && taskRate > 0) {
+			taskScheduler.scheduleAtFixedRate(new RunnableTask(), taskRate);
+		}
 	}
 
 	class RunnableTask implements Runnable {
