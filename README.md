@@ -35,5 +35,5 @@ spring.datasource.driver-class-name | SPRING_DATASOURCE_DRIVER_CLASS_NAME |
 eventuatelocal.kafka.bootstrap.servers | EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS |
 eventuatelocal.zookeeper.connection.string | EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING |
 
-c.f. (eventuate tram cdc)[https://eventuate.io/docs/manual/eventuate-tram/latest/getting-started-eventuate-tram.html] for explanations
+c.f. [eventuate tram cdc](https://eventuate.io/docs/manual/eventuate-tram/latest/getting-started-eventuate-tram.html) for explanations
 
