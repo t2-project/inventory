@@ -25,17 +25,5 @@ public class InventoryApplication {
 	public InventoryService inventoryService() {
 		return new InventoryService();
 	}
-	
-    @Bean
-    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(5);
-        threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
-        return threadPoolTaskScheduler;
-    }
-    
-    @Bean 
-    public TimeoutCollector collector() {
-    	return new TimeoutCollector();
-    }
+
 }
