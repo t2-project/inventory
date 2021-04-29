@@ -53,7 +53,6 @@ public class TimeoutCollector {
 
 		@Override
 		public void run() {
-			LOG.info(this.toString());
 			Map<String, List<String>> expiredItems = getExpiredItems();
 			for (String id : expiredItems.keySet()) {
 				deleteItem(id, expiredItems.get(id));
@@ -70,7 +69,7 @@ public class TimeoutCollector {
 		private Map<String, List<String>> getExpiredItems() {
 			Map<String, List<String>> rval = new HashMap<>();
 			List<InventoryItem> items = repository.findAll();
-			Date now = Date.from(Instant.now().plusSeconds(TTL));
+			Date now = Date.from(Instant.now().minusSeconds(TTL));
 			for (InventoryItem item : items) {
 				for(String key: item.getReservations().keySet()) {
 					// check creation date vs. TTL

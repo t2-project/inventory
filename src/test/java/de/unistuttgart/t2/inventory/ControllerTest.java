@@ -25,6 +25,12 @@ import de.unistuttgart.t2.inventory.repository.Reservation;
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
+/**
+ * Test reservation endpoint
+ * 
+ * @author maumau
+ *
+ */
 public class ControllerTest {
 	
 	@Autowired
