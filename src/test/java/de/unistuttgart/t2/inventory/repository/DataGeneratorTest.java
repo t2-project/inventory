@@ -3,6 +3,8 @@ package de.unistuttgart.t2.inventory.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,12 +77,18 @@ public class DataGeneratorTest {
 		assertEquals(10, productRepository.count());
 	}
 	
-	// default to given int size of 10 if string not parseable
+	// refill
 	@Test
-	public void testGenerationWithStringSize_ParseException() {
+	public void testRestock() {
 		assertEquals(0, productRepository.count());
 		assertNotNull(generator.repository);
 		generator.generateProducts();
-		assertEquals(10, productRepository.count());
+		generator.restockProducts();
+		
+		List<InventoryItem> items = productRepository.findAll(); 
+		
+		for (InventoryItem item : items) {
+			assertEquals(Integer.MAX_VALUE, item.getUnits());
+		}
 	}
 }

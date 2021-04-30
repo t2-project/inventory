@@ -38,4 +38,9 @@ public class InventoryController {
 	public void generateData() {
 		generator.generateProducts();
 	}
+	
+	@GetMapping("/restock")
+	public void restock() {
+		generator.restockProducts();
+	}
 }

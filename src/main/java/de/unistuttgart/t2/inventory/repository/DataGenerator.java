@@ -65,7 +65,7 @@ public class DataGenerator {
 			InventoryItem product = new InventoryItem();
 
 			product.setName(PRODUCTNAMES[i]);
-			product.setUnits(random.nextInt(50) + 20);
+			product.setUnits(random.nextInt(500) + 42);
 			product.setPrice(random.nextInt(10) + random.nextDouble());
 			product.setDescription("very nice " + PRODUCTNAMES[i] + " tea");
 		
@@ -73,6 +73,24 @@ public class DataGenerator {
 		}
 		
 		generateReservations();
+	}
+	
+	/**
+	 * set units of all product to maxUnits.
+	 * 
+	 * this is only for testing :x
+	 * 
+	 */
+	@Transactional
+	public void restockProducts() {
+		int maxUnits = Integer.MAX_VALUE; // maybe make this a parameter later ???
+		List<InventoryItem> items = repository.findAll();
+		
+		for (InventoryItem item : items) {
+			item.setUnits(maxUnits);
+		}
+		
+		repository.saveAll(items);
 	}
 
 	/**
