@@ -1,6 +1,7 @@
 package de.unistuttgart.t2.inventory.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -86,6 +86,8 @@ public class DataGeneratorTest {
 		generator.restockProducts();
 		
 		List<InventoryItem> items = productRepository.findAll(); 
+		
+		assertFalse(items.isEmpty());
 		
 		for (InventoryItem item : items) {
 			assertEquals(Integer.MAX_VALUE, item.getUnits());

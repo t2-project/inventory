@@ -91,6 +91,7 @@ public class DataGenerator {
 		}
 		
 		repository.saveAll(items);
+		LOG.info(String.format("Restocked all products to %d", maxUnits));
 	}
 
 	/**
