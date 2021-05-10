@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * periodically checks the repository and deletes entities whose ttl expired.
+ * Periodically checks all reservations and deletes those whose time to life has been exceeded.
  * 
- * actually you can mongo native attach an expiry date to documents, but i don't
- * how the repository interface works (and wether each item is its own document)
- * thus manual deletion.
+ * <p>
+ * (apparently there is a mongo native attach on expiry date to documents, but i didn't find anything on
+ * whether this also works with the spring repository interface. thus the manual deletion.)
  * 
  * @author maumau
  *
@@ -44,65 +44,79 @@ public class TimeoutCollector {
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
 
+	/**
+	 * schedule the task to check reservations and delete them if necessary.
+	 * 
+	 * <p>
+	 * if either the TTL if reservations, or the taskRate is 0, no task will be scheduled.
+	 */
 	@PostConstruct
 	public void schedulePeriodically() {
 		if (TTL > 0 && taskRate > 0) {
-			taskScheduler.scheduleAtFixedRate(new RunnableTask(), taskRate);
+			taskScheduler.scheduleAtFixedRate(new RecervationCheckAndDeleteTask(), taskRate);
 		}
 	}
 
-	class RunnableTask implements Runnable {
+	/**
+	 * The Task that does the actual checking and deleting of reservations.
+	 * 
+	 * @author maumau
+	 *
+	 */
+	class RecervationCheckAndDeleteTask implements Runnable {
 
 		@Override
 		public void run() {
-			Map<String, List<String>> expiredItems = getExpiredItems();
-			for (String id : expiredItems.keySet()) {
-				deleteItem(id, expiredItems.get(id));
+			Map<String, List<String>> expiredReservation = getExpiredReservations();
+			for (String productId : expiredReservation.keySet()) {
+				deleteReservation(productId, expiredReservation.get(productId));
 			}
 		}
 
 		/**
-		 * get all ids of all expired items.
+		 * Get all ids of all expired items.
 		 * 
-		 * get first and delete later because i want to lock db as little as possible.
+		 * <p>
+		 * The get step is separated from the delete step because i want to lock the db as little as possible and need not do it for getting the ids.
+		 * If any user updates their reservation (and thereby enlongates it's ttl) it's their problem. The reservation will be deleted anyway.
 		 * 
-		 * @return
+		 * @return expired reservations by product
 		 */
-		private Map<String, List<String>> getExpiredItems() {
-			Map<String, List<String>> rval = new HashMap<>();
+		private Map<String, List<String>> getExpiredReservations() {
+			Map<String, List<String>> reservationsByProductId = new HashMap<>();
+			
 			List<InventoryItem> items = repository.findAll();
 			Date now = Date.from(Instant.now().minusSeconds(TTL));
+			
 			for (InventoryItem item : items) {
 				for(String key: item.getReservations().keySet()) {
 					// check creation date vs. TTL
-					if (item.getReservations().get(key).getCreationDate().before(now)) { // fix duration, but that's the gist
-						List<String> foo = rval.getOrDefault(item.getId(), new ArrayList<>());
-						foo.add(key);
-						rval.put(item.getId(), foo);
+					if (item.getReservations().get(key).getCreationDate().before(now)) { 
+						List<String> deadReservations = reservationsByProductId.getOrDefault(item.getId(), new ArrayList<>());
+						deadReservations.add(key);
+						reservationsByProductId.put(item.getId(), deadReservations);
 					}
 				}
 			}
-			return rval;
+			return reservationsByProductId;
 		}
 
 		/**
-		 * delete item from db.
+		 * Delete expired reservations from products.
 		 * 
-		 * this is a stand alone method because i do not know how save delete is, but i
-		 * know that annotating a method with 'transactional' makes it save.
-		 * 
-		 * @param id of item to be deleted.
+		 * @param productId id of the product that has expired reservations
+		 * @param reservations expired reservations of given product
 		 */
 		@Transactional
-		private void deleteItem(String id, List<String> reservations) {
-			Optional<InventoryItem> item = repository.findById(id);
+		private void deleteReservation(String productId, List<String> reservations) {
+			Optional<InventoryItem> item = repository.findById(productId);
 			if (item.isPresent()) {
 				for (String sessionId : reservations) {
 					item.get().getReservations().remove(sessionId);					
 				}
 				repository.save(item.get());
 			}
-			LOG.info(String.format("delete %d expired reservations for product %s", reservations.size(), id));
+			LOG.info(String.format("delete %d expired reservations from product %s", reservations.size(), productId));
 		}
 	}
 }

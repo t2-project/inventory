@@ -16,8 +16,9 @@ import io.eventuate.tram.spring.messaging.producer.jdbc.TramMessageProducerJdbcC
 import io.eventuate.tram.spring.optimisticlocking.OptimisticLockingDecoratorConfiguration;
 
 /**
- * Configuration to run application with saga. use when cdc is up and running
- * somewhere.
+ * Configuration to run application with saga. 
+ * 
+ * Supposed to be used when CDC service is up and running somewhere.
  * 
  * @author maumau
  *

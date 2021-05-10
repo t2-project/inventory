@@ -12,8 +12,8 @@ import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 
 /**
- * Service responsible for the inventory.
- * Mostly handles interaction with the repository.
+ * 
+ * Interactions with the product repository that involve reservations.
  * 
  * @author maumau
  *
@@ -25,12 +25,9 @@ public class InventoryService {
 	ProductRepository productRepository;
 
 	/**
-	 * commit reservations
+	 * commit reservations associated with given sessionId.
 	 * 
-	 * they are sold and need not be saved any longer. this is retry-able. if i
-	 * fail while deleting, i try again. deleting is idempotent.
-	 * 
-	 * @param sessionId to identify which reservations to delete
+	 * @param sessionId to identify the reservations to delete
 	 */
 	public void handleSagaAction(String sessionId) {
 		List<InventoryItem> items = productRepository.findAll();
@@ -54,26 +51,13 @@ public class InventoryService {
 	}
 
 	/**
-	 * adds a reservation to a product.
+	 * attach a reservation for the given session to the given product.
 	 * 
-	 * each time a user wants to add some units of a product to their cart, a
-	 * reservation is also added to the product. This ensures that the saga cannot
-	 * fail at the inventory due to not enough units of a product in stock.
-	 * 
-	 * TODO: there is only one reservation slot per product per user. if a
-	 * user adds products, commits his order (the saga gets started) and adds (or
-	 * deletes) new products they will seen as part of the saga, eventhough they are not.
-	 * solutions to this problem would be
-	 * 	 * a) to timestamp each reservation (usefull, as i want to timestamp them later on for garbage collection)
-	 *   * b) save reservations by orderId (would require to generate the order id before the saga is started)
-	 *   * c) reset the session after saga start, such that reservations cannot change anymore.
-	 * 
-	 * 
-	 * @param productId - products to reserve of
-	 * @param sessionId - user to reserve for
-	 * @param units     - amount to reserve
+	 * @param productId products to reserve of
+	 * @param sessionId user to reserve for
+	 * @param units     amount to reserve
 	 * @throws NoSuchElementException   if the product does not exist
-	 * @throws IllegalArgumentException caused by addReservation
+	 * @throws IllegalArgumentException if any parameter is null
 	 */
 	public InventoryItem makeReservation(String productId, String sessionId, int units) throws NoSuchElementException {
 		if (productId == null || sessionId == null || units < 0) {

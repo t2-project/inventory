@@ -17,7 +17,7 @@ import io.eventuate.tram.spring.consumer.kafka.EventuateTramKafkaMessageConsumer
 import io.eventuate.tram.spring.messaging.producer.jdbc.TramMessageProducerJdbcConfiguration;
 
 /**
- * Configuration the timeout collector
+ * Configuration to have all beans required for the {@link TimeoutCollector TimeoutCollector}.
  * 
  * @author maumau
  *

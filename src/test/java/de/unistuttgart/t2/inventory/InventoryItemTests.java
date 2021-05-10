@@ -38,7 +38,7 @@ public class InventoryItemTests {
 
 	@Test
 	public void testAvailableUnits_exception() {
-		item.setUnits(0);
+	    item = new InventoryItem("id", "name", "description", 0, 0.5, Map.of("session3", new Reservation(3)));
 		Assertions.assertThrows(IllegalStateException.class, () -> {
 			item.getAvailableUnits();
 		});

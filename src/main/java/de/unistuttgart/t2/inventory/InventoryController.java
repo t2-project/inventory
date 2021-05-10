@@ -11,6 +11,15 @@ import de.unistuttgart.t2.common.ReservationRequest;
 import de.unistuttgart.t2.inventory.repository.DataGenerator;
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 
+/**
+ * 
+ * Defines additional endpoints for the inventory.
+ * 
+ * Other endpoints are auto generated.
+ * 
+ * @author maumau
+ *
+ */
 @RestController
 public class InventoryController {
 	
@@ -20,25 +29,29 @@ public class InventoryController {
 	@Autowired
 	DataGenerator generator;
 
-	// put, if i view it as 'updating the product'
-	// post, if i view it as 'creating new reservation....
+	/**
+	 * add a reservation to a product.
+	 * 
+	 * @param body request body
+	 * @return the product that the reservation was added to.
+	 */
 	@PostMapping("/inventory/reservation")
 	public Product addReservation(@RequestBody ReservationRequest body){
 		InventoryItem item = inventoryService.makeReservation(body.getProductId(), body.getSessionId(), body.getUnits());
 		return new Product(item.getId(),item.getName(), item.getDescription(), item.getAvailableUnits(),item.getPrice());
-		
-		// TODO Error handling (d.f. ui back end)
-		// current response : {"timestamp":"2021-03-29T08:46:50.240+00:00","status":500,"error":"Internal Server Error","message":"","path":"/reservation"}
-		// i want to distinguish:
-		// - no units available (currently IAE)
-		// - missing element
 	}
 	
+	/**
+	 * trigger generation of new products
+	 */
 	@GetMapping("/generate")
 	public void generateData() {
 		generator.generateProducts();
 	}
 	
+	/**
+	 * trigger restock of all products 
+	 */
 	@GetMapping("/restock")
 	public void restock() {
 		generator.restockProducts();
