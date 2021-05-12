@@ -35,3 +35,4 @@ build/
 ### ME ###
 **/*.swp
 **/application.local.properties
+**/*.log
