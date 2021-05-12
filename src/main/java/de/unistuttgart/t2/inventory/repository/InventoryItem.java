@@ -101,9 +101,9 @@ public class InventoryItem {
 
     /**
      * 
-     * set the units. cannot be used to decrease the number of units. 
+     * set the units. cannot be used to decrease the number of units.
      * 
-     * @param units new number of unit in stock 
+     * @param units new number of unit in stock
      */
     public void setUnits(int units) {
         if (units > this.units) {
@@ -177,7 +177,9 @@ public class InventoryItem {
      */
     public void addReservation(String sessionId, int unitsToReserve) {
         if (unitsToReserve > getAvailableUnits() || unitsToReserve < 0) {
-            throw new IllegalArgumentException("illegal amount of units to reserve");
+            throw new IllegalArgumentException(String.format(
+                    "illegal amount of units to reserve: tried ro reserve %d units of product %s, but only %d are available",
+                    unitsToReserve, id, getAvailableUnits()));
         }
         if (unitsToReserve == 0) {
             return;
@@ -193,7 +195,7 @@ public class InventoryItem {
     /**
      * remove a reservation and decrease units in stock.
      * 
-     * always use this operation to decrease the the number of unit in stock. 
+     * always use this operation to decrease the the number of unit in stock.
      * 
      * @param sessionId to identify the reservation to be committed
      */

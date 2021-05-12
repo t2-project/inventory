@@ -72,9 +72,7 @@ public class DataGenerator {
 
             repository.save(product);
         }
-        
-        generateReservations();
-    }
+     }
 
     /**
      * restock products in the repository.
@@ -95,48 +93,6 @@ public class DataGenerator {
 
         repository.saveAll(items);
         LOG.info(String.format("Restocked all products to %d", maxUnits));
-    }
-
-    /**
-     * Generate reservations and cart content, if cart service is available.
-     * 
-     * If no cart service is available, nothing happens.
-     * 
-     */
-    @Transactional
-    private void generateReservations() {
-        // check cart availability
-        try {
-            template.getForObject(cartUrl, String.class);
-        } catch (Exception e) {
-            LOG.info("not generating reservations, because: " + e.getMessage());
-            return;
-        }
-
-        // do the actual thing only if cart available
-        List<InventoryItem> items = repository.findAll();
-        if (items.size() == 0) {
-            return;
-        }
-
-        for (int i = 0; i < cartSize; i++) {
-            String sessionId = "sessionid" + i;
-            int numberProductInCart = random.nextInt(10);
-            CartContent cartContent = new CartContent();
-
-            for (int j = 0; j < numberProductInCart; j++) {
-                InventoryItem randomItem = items.get(random.nextInt(items.size()));
-
-                int reservedUnits = random.nextInt(randomItem.getAvailableUnits());
-
-                if (reservedUnits > 0) {
-                    cartContent.getContent().put(randomItem.getId(), reservedUnits);
-                    randomItem.addReservation(sessionId, reservedUnits);
-                }
-            }
-            template.put(cartUrl + sessionId, cartContent);
-            repository.saveAll(items);
-        }
     }
 
     // Predefined products from original tea store
