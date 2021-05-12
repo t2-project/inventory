@@ -23,7 +23,6 @@ import io.eventuate.tram.spring.messaging.producer.jdbc.TramMessageProducerJdbcC
  *
  */
 @EnableAutoConfiguration
-@Profile("!test")
 @Configuration
 public class TimeoutCollectorConfig {
 
@@ -34,10 +33,4 @@ public class TimeoutCollectorConfig {
         threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         return threadPoolTaskScheduler;
     }
-    
-    @Bean 
-    public TimeoutCollector collector() {
-    	return new TimeoutCollector();
-    }
-
 }

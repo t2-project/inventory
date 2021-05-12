@@ -33,26 +33,36 @@ public class TimeoutCollector {
 
 	private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-	@Value("${t2.inventory.TTL:0}") // in seconds
-	long TTL;
-	@Value("${t2.inventory.taskRate:0}") // in milliseconds
-	int taskRate;
+	private long TTL;
+	private int taskRate;
 
 	@Autowired
 	ProductRepository repository;
 
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
+	
+    /**
+     * Create collector.
+     * 
+     * @param TTL       the cart entries' time to live in seconds
+     * @param taskRate  rate at which the collector checks the repo in milliseconds
+     */
+    @Autowired
+    public TimeoutCollector(@Value("${t2.inventory.TTL:0}") long TTL, @Value("${t2.inventory.taskRate:0}") int taskRate) {
+        this.TTL = TTL;
+        this.taskRate = taskRate;
+    }
 
 	/**
-	 * schedule the task to check reservations and delete them if necessary.
+	 * Schedule the task to check reservations and delete them if necessary.
 	 * 
 	 * <p>
-	 * if either the TTL if reservations, or the taskRate is 0, no task will be scheduled.
+	 * If either the TTL or the taskRate is 0, no task will be scheduled.
 	 */
 	@PostConstruct
 	public void schedulePeriodically() {
-		if (TTL > 0 && taskRate > 0) {
+		if (taskRate > 0) {
 			taskScheduler.scheduleAtFixedRate(new RecervationCheckAndDeleteTask(), taskRate);
 		}
 	}
@@ -63,11 +73,13 @@ public class TimeoutCollector {
 	 * @author maumau
 	 *
 	 */
-	class RecervationCheckAndDeleteTask implements Runnable {
+	protected class RecervationCheckAndDeleteTask implements Runnable {
 
 		@Override
 		public void run() {
 			Map<String, List<String>> expiredReservation = getExpiredReservations();
+			LOG.info(String.format("found %d expired reservations", expiredReservation.size()));
+			
 			for (String productId : expiredReservation.keySet()) {
 				deleteReservation(productId, expiredReservation.get(productId));
 			}

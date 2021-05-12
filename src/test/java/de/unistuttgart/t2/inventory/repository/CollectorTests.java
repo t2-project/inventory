@@ -1,90 +1,90 @@
 package de.unistuttgart.t2.inventory.repository;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-
+@DataMongoTest
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestContext.class)
+@ActiveProfiles("test")
 /**
- * Tries to test the collector but (once again) time is a bitch.  
+ * actually i was trying to test my collector.. but timing is a bad bitch and it
+ * fucks me up.
  * 
  * @author maumau
  *
  */
-@DataMongoTest
-@ExtendWith(SpringExtension.class)
-@ActiveProfiles("test")
 class CollectorTests {
-//		
-//	@Autowired ProductRepository repository;
-//	
-//	@Autowired ThreadPoolTaskScheduler scheduler;
-//	
-//	@Autowired TimeoutCollector collector;
-//		
-	// defaults: 
-	// TTL = 20 sec
-	// taskRate = 20000 milli sec = 20 sec
-	
-//	@BeforeEach
-//	public void populateRepository() {
-//		repository.deleteAll();
-//	}
-//	
-//	
-//	@Test
-//	public void collectSingleEntryTest() throws InterruptedException {
-//		InventoryItem item = new InventoryItem("id1", "name1", "description1", 15, 0.5,
-//				Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3))); 
-//		repository.save(item);
-//		
-//		Thread.sleep(300000);
-//		
-//		
-//		assertTrue(repository.findById(item.getId()).isPresent());
-//		
-//		InventoryItem actual = repository.findById(item.getId()).get();
-//		assertEquals(0, actual.getReservations().size());	
-//	}
-//	
-//	@Test
-//	public void resetTTLTest() throws InterruptedException {
-//		InventoryItem item = new InventoryItem("id1", "name1", "description1", 15, 0.5,
-//				Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3))); 
-//		
-//		Date previous = item.getReservations().get("session1").getCreationDate(); 
-//		
-//		Thread.sleep(100);
-//		
-//		item.getReservations().get("session1").renewCreationdate();
-//	
-//		assertTrue(previous.before(item.getReservations().get("session1").getCreationDate()));	
-//	}
-//	
-//	@Test
-//	public void collectMultipleEntryTest() throws InterruptedException {
-//		for (int i = 0; i < 5; i++) {
-//			repository.save(new InventoryItem("id" + i, "name1", "description1", 15, 0.5,
-//					Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3))));			
-//		}
-//		
-//		Thread.sleep(30000);		
-//		List<InventoryItem> items = repository.findAll();
-//		
-//		for (InventoryItem item : items) {
-//			assertEquals(0, item.getReservations().size());			
-//		}
-//	}
+
+    @Autowired
+    TimeoutCollector collector;
+    
+    @Autowired
+    ProductRepository repository;
+
+    @BeforeEach
+    public void populateRepository() {
+        repository.deleteAll();
+        for (int i = 0; i < 5; i++) {
+            InventoryItem item = new InventoryItem(null, "name", "desc", 100, 1.0);
+            item.addReservation("sessionId", 5);
+            repository.save(item);
+        }
+    }
+
+    @Test
+    public void collectAllEntriesTest() throws InterruptedException {
+        
+        // WFT o_O
+        TimeoutCollector.RecervationCheckAndDeleteTask task = collector.new RecervationCheckAndDeleteTask();
+
+        task.run();
+
+        List<InventoryItem> items = repository.findAll();
+        
+        assertFalse(items.isEmpty());
+        
+        for (InventoryItem item : items) {
+            assertTrue(item.getReservations().isEmpty());
+        }
+    }
+    
+    @Test
+    public void collectSomeEntriesTest() throws InterruptedException {
+        InventoryItem otherItem = new InventoryItem("otherid", "name", "desc", 100, 1.0);
+        otherItem.addReservation("otherId", 5);
+        otherItem.getReservations().get("otherId").setCreationDate(Date.from(Instant.now().plusSeconds(6000)));
+        
+        repository.save(otherItem);
+        
+        // WFT o_O
+        TimeoutCollector.RecervationCheckAndDeleteTask task = collector.new RecervationCheckAndDeleteTask();
+
+        task.run();
+        
+        List<InventoryItem> items = repository.findAll();
+
+        for (InventoryItem item : items) {
+            if (item.getId().equals("otherid")) {
+                assertFalse(item.getReservations().isEmpty());
+                return;
+            }
+        }
+
+        assertTrue("the item to test for went missing.", false);
+    }
 }
