@@ -6,9 +6,9 @@ It manages the products and reservations.
 The products are the teas that the Store sells and reservations exist to express that a user plans to buy some units of a product.
 
 
-## Build and Run Manually
+## Build and Run
 
-_**TODO: copy from Order was mangus checked it.**_
+Confer the [Documentation](https://t2-documentation.readthedocs.io/en/latest/guides/kube.html) on how to build, run or deploy the T2 Store services.
 
 
 ## HTTP Endpoints
