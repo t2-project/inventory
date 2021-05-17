@@ -38,7 +38,8 @@ public class InventoryItem {
     @JsonProperty("price")
     private double price;
 
-    @JsonIgnore
+    //@JsonIgnore
+    @JsonProperty("reservation")
     // sessionIds -> (reserved units x timeout)
     private Map<String, Reservation> reservations;
 

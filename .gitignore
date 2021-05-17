@@ -34,5 +34,6 @@ build/
 
 ### ME ###
 **/*.swp
-**/application.local.properties
+**/*.test.properties
+**/*.local.properties
 **/*.log
