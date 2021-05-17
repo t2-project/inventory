@@ -67,4 +67,9 @@ public class Reservation {
         }
         return this.creationDate.equals(((Reservation) o).creationDate) && this.units == ((Reservation) o).units;
     }
+
+    @Override
+    public String toString() {
+        return "Reservation [creationDate=" + creationDate + ", units=" + units + "]";
+    }
 }
