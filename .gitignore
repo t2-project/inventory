@@ -34,6 +34,6 @@ build/
 
 ### ME ###
 **/*.swp
-**/*.test.properties
-**/*.local.properties
+# ignore all property files except the base (with no additional words in its name)
+**/*.*.properties 
 **/*.log
