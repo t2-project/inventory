@@ -16,7 +16,11 @@ import de.unistuttgart.t2.inventory.repository.ProductRepository;
  * On Transactions: The 'Transactional' annotation (apparently) does not work
  * with MongoDB. There is a MongoTransactionManager but i could not figure out
  * how to make it work with the Spring RepositoryTemplate. Thus, good old
- * semaphores it is. Might not be optimal but at least it works :)
+ * 'synchronized' it is. Might not be optimal but at least it works - with a
+ * single inventory instance.
+ * 
+ * Once i start replicating the inventory, the 'synchronized' won't help anymore
+ * though.
  * 
  * @author maumau
  *
