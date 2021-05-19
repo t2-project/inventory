@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
@@ -13,10 +14,8 @@ import de.unistuttgart.t2.inventory.repository.ProductRepository;
  * 
  * Interactions with the product repository that involve reservations.
  * 
- * On Transactions: The 'Transactional' annotation (apparently) does not work
- * with MongoDB. There is a MongoTransactionManager but i could not figure out
- * how to make it work with the Spring RepositoryTemplate. Thus, good old
- * semaphores it is. Might not be optimal but at least it works :)
+ * Lol, i figured out how to use that damn transaction manager. thus,
+ * 'transactional' annotation works again.
  * 
  * @author maumau
  *
@@ -31,14 +30,13 @@ public class InventoryService {
      * 
      * @param sessionId to identify the reservations to delete
      */
+    @Transactional
     public void handleSagaAction(String sessionId) {
-        synchronized (this) {
-            List<InventoryItem> items = productRepository.findAll();
-            for (InventoryItem item : items) {
-                item.commitReservation(sessionId);
-            }
-            productRepository.saveAll(items);
+        List<InventoryItem> items = productRepository.findAll();
+        for (InventoryItem item : items) {
+            item.commitReservation(sessionId);
         }
+        productRepository.saveAll(items);
     }
 
     /**
@@ -46,14 +44,13 @@ public class InventoryService {
      * 
      * @param sessionId to identify which reservations to delete
      */
+    @Transactional
     public void handleSagaCompensation(String sessionId) {
-        synchronized (this) {
-            List<InventoryItem> items = productRepository.findAll();
-            for (InventoryItem item : items) {
-                item.getReservations().remove(sessionId);
-            }
-            productRepository.saveAll(items);
+        List<InventoryItem> items = productRepository.findAll();
+        for (InventoryItem item : items) {
+            item.getReservations().remove(sessionId);
         }
+        productRepository.saveAll(items);
     }
 
     /**
@@ -65,17 +62,16 @@ public class InventoryService {
      * @throws NoSuchElementException   if the product does not exist
      * @throws IllegalArgumentException if any parameter is null
      */
+    @Transactional
     public InventoryItem makeReservation(String productId, String sessionId, int units) throws NoSuchElementException {
         if (productId == null || sessionId == null || units < 0) {
             throw new IllegalArgumentException(
                     "productId : " + productId + ", sessionId : " + sessionId + ", units : " + units);
         }
-        synchronized (this) {
-            InventoryItem item = productRepository.findById(productId).orElseThrow(
-                    () -> new NoSuchElementException(String.format("product with id %s not found", productId)));
+        InventoryItem item = productRepository.findById(productId).orElseThrow(
+                () -> new NoSuchElementException(String.format("product with id %s not found", productId)));
 
-            item.addReservation(sessionId, units);
-            return productRepository.save(item);
-        }
+        item.addReservation(sessionId, units);
+        return productRepository.save(item);
     }
 }
