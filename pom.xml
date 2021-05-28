@@ -121,6 +121,11 @@
 		    <artifactId>opentracing-spring-jaeger-cloud-starter</artifactId>
     		<version>${JAEGER_VERSION}</version>
 	    </dependency>
+        <!--health-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
