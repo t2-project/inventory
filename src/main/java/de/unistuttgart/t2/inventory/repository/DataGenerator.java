@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import de.unistuttgart.t2.common.CartContent;
-
 /**
  * Generates new products into the product repository or or restocks existing ones. 
  * 
@@ -36,10 +34,6 @@ public class DataGenerator {
     @Value("${t2.inventory.size:20}")
     protected int inventorySize;
 
-    @Value("${t2.cart.url}")
-    private String cartUrl;
- 
-    private int cartSize = 3;
     private Random random = new Random(5);
 
     /**
