@@ -65,7 +65,7 @@ public class InventoryItem {
     @JoinTable(name = "item_reservation_mapping", 
       joinColumns = {@JoinColumn(name = "item_id", referencedColumnName = "id")},
       inverseJoinColumns = {@JoinColumn(name = "reservation_id", referencedColumnName = "id")})
-    @MapKey(name = "id")
+    @MapKey(name = "userId")
     @JsonProperty("reservations")
     private Map<String, Reservation> reservations;
 
@@ -188,7 +188,7 @@ public class InventoryItem {
         if (reservations.containsKey(sessionId)) {
             reservations.get(sessionId).updateUnits(unitsToReserve);
         } else {
-            reservations.put(sessionId, new Reservation(unitsToReserve));
+            reservations.put(sessionId, new Reservation(unitsToReserve, sessionId));
         }
     }
 

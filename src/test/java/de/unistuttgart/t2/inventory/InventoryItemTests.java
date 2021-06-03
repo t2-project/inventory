@@ -21,7 +21,7 @@ public class InventoryItemTests {
 	@BeforeEach
 	void setUp() {
 		item = new InventoryItem("id", "name", "description", 15, 0.5,
-				Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3)));
+				Map.of("session1", new Reservation(1, "session1"), "session2", new Reservation(2, "session2"), "session3", new Reservation(3, "session3")));
 	}
 
 	@DisplayName("testReservationNeverNull")
@@ -38,7 +38,7 @@ public class InventoryItemTests {
 
 	@Test
 	public void testAvailableUnits_exception() {
-	    item = new InventoryItem("id", "name", "description", 0, 0.5, Map.of("session3", new Reservation(3)));
+	    item = new InventoryItem("id", "name", "description", 0, 0.5, Map.of("session3", new Reservation(3,"session3")));
 		Assertions.assertThrows(IllegalStateException.class, () -> {
 			item.getAvailableUnits();
 		});
@@ -104,7 +104,7 @@ public class InventoryItemTests {
 		assertTrue(item.equals(item));
 
 		InventoryItem other = new InventoryItem("id", "name", "description", 15, 0.5,
-				Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3)));
+				Map.of("session1", new Reservation(1,"session1"), "session2", new Reservation(2,"session2"), "session3", new Reservation(3,"session3")));
 
 		assertTrue(item.equals(other));
 		assertTrue(other.equals(item));

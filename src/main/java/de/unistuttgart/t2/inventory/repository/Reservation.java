@@ -36,19 +36,23 @@ public class Reservation {
     private Date creationDate;
     @Column(name = "units")
     private int units;
+    
+    @Column(name = "userId")
+    private String userId;
 
     public Reservation() {
-        this(0,Date.from(Instant.now()));
+        this(0,Date.from(Instant.now()), "");
     }
 
-    public Reservation(int units) {
-        this(units, Date.from(Instant.now()));
+    public Reservation(int units, String userId) {
+        this(units, Date.from(Instant.now()), userId);
     }
 
-    protected Reservation(int units, Date date) {
+    protected Reservation(int units, Date date, String userId) {
         super();
         this.units = units;
         this.creationDate = date;
+        this.userId = userId;
     }
 
     

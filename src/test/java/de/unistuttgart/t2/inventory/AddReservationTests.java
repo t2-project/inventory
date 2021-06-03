@@ -36,12 +36,16 @@ public class AddReservationTests {
 	ProductRepository productRepository;
 	
 	String id1, id2;
+	
+	String session1 = "session1";
+	String session2 = "session2";
+	String session3 = "session3";
 
 	@BeforeEach
 	void populateRepository() {
 		InventoryItem item1 = new InventoryItem("id1", "name1", "description1", 15, 0.5,
-				Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3)));
-		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of("session1", new Reservation(4)));
+				Map.of(session1, new Reservation(1,session1), session2, new Reservation(2,session2), "session3", new Reservation(3, session3)));
+		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of(session1, new Reservation(4,session1)));
 		id1 = productRepository.save(item1).getId();
 		id2 = productRepository.save(item2).getId();
 	}
@@ -117,7 +121,7 @@ public class AddReservationTests {
 	@Test
 	public void throwIAEProductIDReservationTest(@Autowired InventoryService inventoryService) {
 		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			inventoryService.makeReservation(null, "session1", 1);
+			inventoryService.makeReservation(null, session1, 1);
 		});
 	}
 	
@@ -133,7 +137,7 @@ public class AddReservationTests {
 	@Test
 	public void throwIAENegativeUnitsReservationTest(@Autowired InventoryService inventoryService) {
 		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			inventoryService.makeReservation(id1, "session1", -1);
+			inventoryService.makeReservation(id1, session1, -1);
 		});
 	}
 	
@@ -141,7 +145,7 @@ public class AddReservationTests {
 	@Test
 	public void throwIAEUnitsReservationTest(@Autowired InventoryService inventoryService) {
 		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			inventoryService.makeReservation(id1, "session1", 1000);
+			inventoryService.makeReservation(id1, session1, 1000);
 		});
 	}
 
@@ -149,7 +153,7 @@ public class AddReservationTests {
 	@Test
 	public void throwNSEEReservationTest(@Autowired InventoryService inventoryService) {
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			inventoryService.makeReservation("wrongid", "session1", 1);
+			inventoryService.makeReservation("wrongid", session1, 1);
 		});
 	}
 }
