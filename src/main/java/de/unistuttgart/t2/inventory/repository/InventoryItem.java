@@ -3,7 +3,18 @@ package de.unistuttgart.t2.inventory.repository;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.data.annotation.Id;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,45 +33,54 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author maumau
  *
  */
+@Entity
+@Table(name = "inventory_item")
 public class InventoryItem {
     @Id
+    @Column(name = "id")
     @JsonProperty("id")
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
+    
+    @Column(name = "name")
     @JsonProperty("name")
     private String name;
+    
+    @Column(name = "description")
     @JsonProperty("description")
     private String description;
 
     // number units of this product. never less than the sum of all reservations.
+    @Column(name = "units")
     @JsonProperty("units")
     private int units;
 
+    @Column(name = "price")
     @JsonProperty("price")
     private double price;
-
-    //@JsonIgnore
-    @JsonProperty("reservation")
-    // sessionIds -> (reserved units x timeout)
+    
+    
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "item_reservation_mapping", 
+      joinColumns = {@JoinColumn(name = "item_id", referencedColumnName = "id")},
+      inverseJoinColumns = {@JoinColumn(name = "reservation_id", referencedColumnName = "id")})
+    @MapKey(name = "id")
+    @JsonProperty("reservations")
     private Map<String, Reservation> reservations;
 
     /**
      * because spring framework wants this.
      */
     public InventoryItem() {
-        this.reservations = new HashMap<String, Reservation>();
+        this("", "", "", 0, 0, new HashMap<String, Reservation>());
+    }
+
+    public InventoryItem(String id, String name, String description, int units, double price) {
+        this(id, name, description, units, price, new HashMap<String, Reservation>());
     }
 
     @JsonCreator
-    public InventoryItem(String id, String name, String description, int units, double price) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.units = units;
-        this.price = price;
-        this.reservations = new HashMap<String, Reservation>();
-    }
-
     public InventoryItem(String id, String name, String description, int units, double price,
             Map<String, Reservation> reservations) {
         super();
@@ -76,24 +96,12 @@ public class InventoryItem {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public int getUnits() {
@@ -116,16 +124,8 @@ public class InventoryItem {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
     public Map<String, Reservation> getReservations() {
         return reservations;
-    }
-
-    public void setReservations(Map<String, Reservation> reservations) {
-        this.reservations = new HashMap<>(reservations);
     }
 
     @Override
@@ -186,8 +186,7 @@ public class InventoryItem {
             return;
         }
         if (reservations.containsKey(sessionId)) {
-            int updatedReservationUnits = unitsToReserve + reservations.get(sessionId).getUnits();
-            reservations.get(sessionId).setUnits(updatedReservationUnits);
+            reservations.get(sessionId).updateUnits(unitsToReserve);
         } else {
             reservations.put(sessionId, new Reservation(unitsToReserve));
         }

@@ -1,6 +1,6 @@
 package de.unistuttgart.t2.inventory.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(
@@ -8,6 +8,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 	    itemResourceRel = "inventory",
 	    collectionResourceRel = "inventory"
 	)
-public interface ProductRepository extends MongoRepository<InventoryItem, String> { 
+public interface ProductRepository extends JpaRepository<InventoryItem, String> { 
 
 }

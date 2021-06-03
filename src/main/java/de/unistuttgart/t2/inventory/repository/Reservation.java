@@ -3,6 +3,14 @@ package de.unistuttgart.t2.inventory.repository;
 import java.time.Instant;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 /**
  * A Reservation of a certain number of units.
  * 
@@ -13,40 +21,54 @@ import java.util.Date;
  * @author maumau
  *
  */
+@Entity
+@Table(name = "reservations")
 public class Reservation {
+    
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
+    
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_on")
     private Date creationDate;
+    @Column(name = "units")
     private int units;
 
     public Reservation() {
-        creationDate = Date.from(Instant.now());
+        this(0,Date.from(Instant.now()));
     }
 
     public Reservation(int units) {
-        this();
-        this.units = units;
+        this(units, Date.from(Instant.now()));
     }
 
+    protected Reservation(int units, Date date) {
+        super();
+        this.units = units;
+        this.creationDate = date;
+    }
+
+    
     public int getUnits() {
         return units;
     }
     
     /** 
      * 
-     * set number of units and also renew the creation date. 
+     * update number of units and also renew the creation date. 
      * 
-     * @param units new number of reserved units
+     * @param update additionally reserved units
      */
-    public void setUnits(int units) {
-        this.units = units;
+    public void updateUnits(int update) {
+        this.units = units + update;
         renewCreationdate();
     }
 
     public Date getCreationDate() {
         return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     /**

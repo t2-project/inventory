@@ -16,7 +16,7 @@ import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 
 /**
- * handles messages for the inventroy service.
+ * handles messages for the inventory service.
  * 
  * listens to the {@code inventory} queue.
  * 

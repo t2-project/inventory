@@ -4,16 +4,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import de.unistuttgart.t2.inventory.config.ExculdeSagaConfig;
 import de.unistuttgart.t2.inventory.config.IncludeSagaConfig;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
-import de.unistuttgart.t2.inventory.repository.TimeoutCollector;
 
 @Import({IncludeSagaConfig.class, ExculdeSagaConfig.class})
-@EnableMongoRepositories(basePackageClasses = {ProductRepository.class}) // or else we wont find the mongo bean
+@EnableJpaRepositories(basePackageClasses = {ProductRepository.class})
+@EnableTransactionManagement
 @SpringBootApplication
 public class InventoryApplication {
 
@@ -22,8 +22,8 @@ public class InventoryApplication {
 	}
 	
 	@Bean
-	public InventoryService inventoryService() {
-		return new InventoryService();
+	public InventoryService inventoryService(ProductRepository repository) {
+		return new InventoryService(repository);
 	}
 
 }

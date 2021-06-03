@@ -2,7 +2,6 @@ package de.unistuttgart.t2.inventory.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
@@ -11,11 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@DataMongoTest
+@DataJpaTest
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class DataGeneratorTest {
@@ -27,10 +26,8 @@ public class DataGeneratorTest {
 	
 	@BeforeEach
 	public void setup() {
-		 generator = new DataGenerator();
-		 generator.repository = productRepository;
+		 generator = new DataGenerator(productRepository, 10);
 		 productRepository.deleteAll();
-		 generator.inventorySize = 10;
 	}
 	
 	@AfterEach
@@ -41,22 +38,19 @@ public class DataGeneratorTest {
 	@Test
 	public void testDefaultGeneration() {
 		assertEquals(0, productRepository.count());
-		assertNotNull(generator.repository);
 		
 		generator.generateProducts();
 		
 		assertEquals(10, productRepository.count());
 	}
 	
-	// generate new items if there are not enough in the repo
 	@Test
 	public void testAdditionalGeneration() {
 		assertEquals(0, productRepository.count());
-		assertNotNull(generator.repository);
 		generator.generateProducts();
 		assertEquals(10, productRepository.count());
 		
-		generator.inventorySize = 15;
+		generator = new DataGenerator(productRepository, 15);
 		generator.generateProducts();
 		
 		assertEquals(15, productRepository.count());
@@ -67,21 +61,18 @@ public class DataGeneratorTest {
 	@Test
 	public void testNoAdditionalGeneration() {
 		assertEquals(0, productRepository.count());
-		assertNotNull(generator.repository);
 		generator.generateProducts();
 		assertEquals(10, productRepository.count());
 		
-		generator.inventorySize = 4;
+		generator = new DataGenerator(productRepository, 5);
 		generator.generateProducts();
 		
 		assertEquals(10, productRepository.count());
 	}
 	
-	// refill
 	@Test
 	public void testRestock() {
 		assertEquals(0, productRepository.count());
-		assertNotNull(generator.repository);
 		generator.generateProducts();
 		generator.restockProducts();
 		

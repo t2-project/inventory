@@ -23,11 +23,14 @@ import de.unistuttgart.t2.inventory.repository.InventoryItem;
 @RestController
 public class InventoryController {
 	
-	@Autowired
-	InventoryService inventoryService;
+	private InventoryService inventoryService;	
+	private DataGenerator generator;
 	
-	@Autowired
-	DataGenerator generator;
+	public InventoryController(@Autowired InventoryService inventoryService, @Autowired DataGenerator generator) {
+	    assert(generator != null && inventoryService != null);
+        this.inventoryService = inventoryService;
+        this.generator = generator;
+    }
 
 	/**
 	 * add a reservation to a product.
@@ -56,4 +59,6 @@ public class InventoryController {
 	public void restock() {
 		generator.restockProducts();
 	}
+	
+	// TODO : exception handler
 }

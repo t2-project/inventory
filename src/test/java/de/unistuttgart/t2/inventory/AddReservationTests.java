@@ -13,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -21,21 +21,29 @@ import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 import de.unistuttgart.t2.inventory.repository.Reservation;
 
-@DataMongoTest
+@DataJpaTest
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
+/**
+ * Test the adding of reservations.
+ * 
+ * @author maumau
+ *
+ */
 public class AddReservationTests {
 
 	@Autowired
 	ProductRepository productRepository;
+	
+	String id1, id2;
 
 	@BeforeEach
 	void populateRepository() {
 		InventoryItem item1 = new InventoryItem("id1", "name1", "description1", 15, 0.5,
 				Map.of("session1", new Reservation(1), "session2", new Reservation(2), "session3", new Reservation(3)));
 		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of("session1", new Reservation(4)));
-		productRepository.save(item1);
-		productRepository.save(item2);
+		id1 = productRepository.save(item1).getId();
+		id2 = productRepository.save(item2).getId();
 	}
 
 	@DisplayName("testMakeNewReservation")
@@ -43,12 +51,12 @@ public class AddReservationTests {
 	public void makeNewReservationTest(@Autowired InventoryService inventoryService) {
 		// make reservation
 		String key = "sessionId";
-		inventoryService.makeReservation("id1", key, 1);
+		inventoryService.makeReservation(id1, key, 1);
 
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Reservation> actual = productRepository.findById("id1").get().getReservations();
+		Map<String, Reservation> actual = productRepository.findById(id1).get().getReservations();
 
 		assertEquals(4, actual.size());
 		assertTrue(actual.containsKey(key));
@@ -60,12 +68,12 @@ public class AddReservationTests {
 	public void makeNoNewReservationTest(@Autowired InventoryService inventoryService) {
 		// make reservation
 		String key = "sessionId";
-		inventoryService.makeReservation("id1", key, 0);
+		inventoryService.makeReservation(id1, key, 0);
 
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Reservation> actual = productRepository.findById("id1").get().getReservations();
+		Map<String, Reservation> actual = productRepository.findById(id1).get().getReservations();
 
 		assertEquals(3, actual.size());
 		assertFalse(actual.containsKey(key));
@@ -76,12 +84,12 @@ public class AddReservationTests {
 	public void increaseReservationTest(@Autowired InventoryService inventoryService) {
 		// make reservation
 		String key = "session1";
-		inventoryService.makeReservation("id1", key, 1);
+		inventoryService.makeReservation(id1, key, 1);
 
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Reservation> actual = productRepository.findById("id1").get().getReservations();
+		Map<String, Reservation> actual = productRepository.findById(id1).get().getReservations();
 
 		assertEquals(3, actual.size());
 		assertTrue(actual.containsKey(key));
@@ -93,12 +101,12 @@ public class AddReservationTests {
 	public void unchangedReservationTest(@Autowired InventoryService inventoryService) {
 		// make reservation
 		String key = "session1";
-		inventoryService.makeReservation("id1", key, 0);
+		inventoryService.makeReservation(id1, key, 0);
 
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Reservation> actual = productRepository.findById("id1").get().getReservations();
+		Map<String, Reservation> actual = productRepository.findById(id1).get().getReservations();
 
 		assertEquals(3, actual.size());
 		assertTrue(actual.containsKey(key));
@@ -117,7 +125,7 @@ public class AddReservationTests {
 	@Test
 	public void throwIAESessionIDReservationTest(@Autowired InventoryService inventoryService) {
 		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			inventoryService.makeReservation("id1", null, 1);
+			inventoryService.makeReservation(id1, null, 1);
 		});
 	}
 	
@@ -125,7 +133,7 @@ public class AddReservationTests {
 	@Test
 	public void throwIAENegativeUnitsReservationTest(@Autowired InventoryService inventoryService) {
 		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			inventoryService.makeReservation("id1", "session1", -1);
+			inventoryService.makeReservation(id1, "session1", -1);
 		});
 	}
 	
@@ -133,7 +141,7 @@ public class AddReservationTests {
 	@Test
 	public void throwIAEUnitsReservationTest(@Autowired InventoryService inventoryService) {
 		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			inventoryService.makeReservation("id1", "session1", 1000);
+			inventoryService.makeReservation(id1, "session1", 1000);
 		});
 	}
 
