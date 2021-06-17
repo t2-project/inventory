@@ -3,6 +3,7 @@ package de.unistuttgart.t2.inventory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,22 +21,8 @@ import de.unistuttgart.t2.inventory.repository.Reservation;
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class DeleteReservationTests {
+public class DeleteReservationTests extends RepositoryTests{
     
-	@Autowired
-	ProductRepository productRepository;
-	
-	String id1, id2;
-
-	@BeforeEach
-	void populateRepository() {
-	    InventoryItem item1 = new InventoryItem("id1", "name1", "description1", 15, 0.5,
-				Map.of("session1", new Reservation(1, "session1"), "session2", new Reservation(2,"session2"), "session3", new Reservation(3,"session3")));
-		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of("session1", new Reservation(4,"session1")));
-		id1 = productRepository.save(item1).getId();
-		id2 = productRepository.save(item2).getId();
-	}
-
 	@Test
 	public void handleSagaActionTest(@Autowired InventoryService inventoryService) {
 		// make reservation
@@ -52,10 +39,10 @@ public class DeleteReservationTests {
 	    assertEquals(9, actual.getAvailableUnits());
 	        
 		
-		Map<String, Reservation> actualReservation = actual.getReservations();
+		List<Reservation> actualReservation = actual.getReservations();
 
 		assertEquals(2, actualReservation.size());
-		assertFalse(actualReservation.containsKey(key));
+		assertReservationAbsence(actualReservation, key);
 		
 		// assert item id2
 		actual = productRepository.findById(id2).get();
@@ -66,7 +53,7 @@ public class DeleteReservationTests {
 		actualReservation = actual.getReservations();
 		
 		assertEquals(0, actualReservation.size());
-        assertFalse(actualReservation.containsKey(key));	
+		assertReservationAbsence(actualReservation, key);	
 	}
 
 	    @Test
@@ -82,13 +69,13 @@ public class DeleteReservationTests {
 	        InventoryItem actual = productRepository.findById(id1).get();
 	        
 	        assertEquals(15, actual.getUnits());
-	        assertEquals(10, actual.getAvailableUnits());
-	            
+	        assertEquals(10, actual.getAvailableUnits());  
 	        
-	        Map<String, Reservation> actualReservation = actual.getReservations();
+	        List<Reservation> actualReservation = actual.getReservations();
 
 	        assertEquals(2, actualReservation.size());
-	        assertFalse(actualReservation.containsKey(key));
+	        assertReservationAbsence(actualReservation, key);
+	        
 	        
 	        // assert item id2
 	        actual = productRepository.findById(id2).get();
@@ -99,7 +86,7 @@ public class DeleteReservationTests {
 	        actualReservation = actual.getReservations();
 	        
 	        assertEquals(0, actualReservation.size());
-	        assertFalse(actualReservation.containsKey(key));    
+	        assertReservationAbsence(actualReservation, key);
 	    }
 }
 

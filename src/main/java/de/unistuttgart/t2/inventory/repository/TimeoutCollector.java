@@ -1,12 +1,10 @@
 package de.unistuttgart.t2.inventory.repository;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -16,16 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Periodically checks all reservations and deletes those whose time to life has
  * been exceeded.
  * 
- * <p>
- * (apparently there is a mongo native attach on expiry date to documents, but i
- * didn't find anything on whether this also works with the spring repository
- * interface. thus the manual deletion.)
+ * TODO : ensure that only reservations that are not part of a running saga are deleted
  * 
  * @author maumau
  *
@@ -35,10 +29,13 @@ public class TimeoutCollector {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
+    /** in seconds */
     private long TTL;
+    /** in milliseconds */
     private int taskRate;
 
-    private final ProductRepository repository;
+    private final ReservationRepository repository;
+    private final ProductRepository itemRepository;
     private final ThreadPoolTaskScheduler taskScheduler;
 
     /**
@@ -50,13 +47,15 @@ public class TimeoutCollector {
     @Autowired
     public TimeoutCollector(@Value("${t2.inventory.TTL:0}") final long TTL,
             @Value("${t2.inventory.taskRate:0}") final int taskRate,
-            @Autowired final ThreadPoolTaskScheduler taskScheduler, @Autowired final ProductRepository repository) {
-        assert(TTL >= 0 && taskRate >= 0 && taskScheduler != null && repository != null);
+            @Autowired final ThreadPoolTaskScheduler taskScheduler, @Autowired final ReservationRepository repository,
+            @Autowired final ProductRepository itemRepository) {
+        assert (TTL >= 0 && taskRate >= 0 && taskScheduler != null && repository != null && itemRepository != null);
         this.TTL = TTL;
         this.taskRate = taskRate;
         this.taskScheduler = taskScheduler;
         this.repository = repository;
-        
+        this.itemRepository = itemRepository;
+
     }
 
     /**
@@ -75,6 +74,13 @@ public class TimeoutCollector {
     /**
      * The Task that does the actual checking and deleting of reservations.
      * 
+     * TODO how do i prevent this from collection 'in progress' sagas? TODO 'father
+     * less' reservations are only caused when orchestrator is down. I could flag
+     * the reservations as 'PENDING' (not yet ordered) 'PROCESSING' (saga runs) or
+     * 'DONE' (you may delete) and frequently delete 'DONE', scarcely delete
+     * 'PENDING' (i.e. after cookie death) and report 'PROCESSING' after some time
+     * as major erro...
+     * 
      * @author maumau
      *
      */
@@ -82,61 +88,26 @@ public class TimeoutCollector {
 
         @Override
         public void run() {
-            Map<String, List<String>> expiredReservation = getExpiredReservations();
-            LOG.info(String.format("found %d expired reservations", expiredReservation.size()));
+            List<Reservation> items = repository.findAll();
+            Date latestDateAlive = Date.from(Instant.now().minusSeconds(TTL));
 
-            for (String productId : expiredReservation.keySet()) {
-                deleteReservation(productId, expiredReservation.get(productId));
-            }
+            Collection<Reservation> rval = items.stream().filter((Reservation r) -> {
+                return r.getCreationDate().before(latestDateAlive);
+            }).collect(Collectors.toSet());
+
+            LOG.info(String.format("found %d expired reservations", rval.size()));
+
+            deleteAtItems(rval);
+            repository.deleteAll(rval);
         }
 
-        /**
-         * Get all ids of all expired items.
-         * 
-         * <p>
-         * The get step is separated from the delete step because i want to lock the db
-         * as little as possible and need not do it for getting the ids. If any user
-         * updates their reservation (and thereby enlongates it's ttl) it's their
-         * problem. The reservation will be deleted anyway.
-         * 
-         * @return expired reservations by product
-         */
-        private Map<String, List<String>> getExpiredReservations() {
-            Map<String, List<String>> reservationsByProductId = new HashMap<>();
+        public void deleteAtItems(Collection<Reservation> rs) {
+            for (Reservation r : rs) {
 
-            List<InventoryItem> items = repository.findAll();
-            Date now = Date.from(Instant.now().minusSeconds(TTL));
-
-            for (InventoryItem item : items) {
-                for (String key : item.getReservations().keySet()) {
-                    // check creation date vs. TTL
-                    if (item.getReservations().get(key).getCreationDate().before(now)) {
-                        List<String> deadReservations = reservationsByProductId.getOrDefault(item.getId(),
-                                new ArrayList<>());
-                        deadReservations.add(key);
-                        reservationsByProductId.put(item.getId(), deadReservations);
-                    }
-                }
+                InventoryItem i = itemRepository.findById(r.item.getId()).get();
+                i.deleteReservation(r.getUserId());
+                itemRepository.save(i);
             }
-            return reservationsByProductId;
-        }
-
-        /**
-         * Delete expired reservations from products.
-         * 
-         * @param productId    id of the product that has expired reservations
-         * @param reservations expired reservations of given product
-         */
-        @Transactional
-        private void deleteReservation(String productId, List<String> reservations) {
-            Optional<InventoryItem> item = repository.findById(productId);
-            if (item.isPresent()) {
-                for (String sessionId : reservations) {
-                    item.get().getReservations().remove(sessionId);
-                }
-                repository.save(item.get());
-            }
-            LOG.info(String.format("delete %d expired reservations from product %s", reservations.size(), productId));
         }
     }
 }

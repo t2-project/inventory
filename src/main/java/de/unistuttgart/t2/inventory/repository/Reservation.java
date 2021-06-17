@@ -5,8 +5,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -39,22 +41,34 @@ public class Reservation {
     
     @Column(name = "userId")
     private String userId;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    public InventoryItem item;
 
     public Reservation() {
-        this(0,Date.from(Instant.now()), "");
+        this(0,Date.from(Instant.now()), "", null);
     }
 
-    public Reservation(int units, String userId) {
-        this(units, Date.from(Instant.now()), userId);
+    public Reservation(int units, String userId, InventoryItem item) {
+        this(units, Date.from(Instant.now()), userId, item);
     }
 
-    protected Reservation(int units, Date date, String userId) {
+    protected Reservation(int units, Date date, String userId, InventoryItem item) {
         super();
         this.units = units;
         this.creationDate = date;
         this.userId = userId;
+        this.item = item;
     }
 
+    public int getId() {
+        return id;
+    }
+    
+    public String getUserId() {
+        return userId;
+    }
+    
     
     public int getUnits() {
         return units;
@@ -62,7 +76,7 @@ public class Reservation {
     
     /** 
      * 
-     * update number of units and also renew the creation date. 
+     * increase number of units by 'update' and also renew the creation date. 
      * 
      * @param update additionally reserved units
      */
@@ -91,11 +105,13 @@ public class Reservation {
         if (!(o instanceof Reservation)) {
             return false;
         }
-        return this.creationDate.equals(((Reservation) o).creationDate) && this.units == ((Reservation) o).units;
+        return this.userId.equals(((Reservation) o).userId);
     }
 
     @Override
     public String toString() {
-        return "Reservation [creationDate=" + creationDate + ", units=" + units + "]";
+        return "Reservation [id=" + id + ", creationDate=" + creationDate + ", units=" + units + ", userId=" + userId
+                + ", item=" + item + "]";
     }
+
 }

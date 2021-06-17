@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
+import de.unistuttgart.t2.inventory.repository.Reservation;
+import de.unistuttgart.t2.inventory.repository.ReservationRepository;
 
 /**
  * 
@@ -20,10 +22,13 @@ import de.unistuttgart.t2.inventory.repository.ProductRepository;
 @Transactional
 public class InventoryService {
 
-    ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final ReservationRepository reservationRepository;
     
-    public InventoryService(@Autowired ProductRepository productRepository) {
+    public InventoryService(@Autowired ProductRepository productRepository, @Autowired ReservationRepository reservationRepository) {
+        assert(productRepository != null && reservationRepository != null);
         this.productRepository = productRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     /**
@@ -47,9 +52,17 @@ public class InventoryService {
     public void handleSagaCompensation(String sessionId) {
             List<InventoryItem> items = productRepository.findAll();
             for (InventoryItem item : items) {
-                item.getReservations().remove(sessionId);
+                item.deleteReservation(sessionId);
+                
             }
             productRepository.saveAll(items);
+            
+            List<Reservation> reservations = reservationRepository.findAll();
+            for (Reservation reservation : reservations) {
+                if(reservation.getUserId().equals(sessionId)) {
+                    reservationRepository.delete(reservation);
+                }
+            }
     }
 
     /**

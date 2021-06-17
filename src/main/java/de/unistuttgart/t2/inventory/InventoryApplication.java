@@ -10,9 +10,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import de.unistuttgart.t2.inventory.config.ExculdeSagaConfig;
 import de.unistuttgart.t2.inventory.config.IncludeSagaConfig;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
+import de.unistuttgart.t2.inventory.repository.ReservationRepository;
 
 @Import({IncludeSagaConfig.class, ExculdeSagaConfig.class})
-@EnableJpaRepositories(basePackageClasses = {ProductRepository.class})
+@EnableJpaRepositories(basePackageClasses = {ProductRepository.class, ReservationRepository.class})
 @EnableTransactionManagement
 @SpringBootApplication
 public class InventoryApplication {
@@ -22,8 +23,8 @@ public class InventoryApplication {
 	}
 	
 	@Bean
-	public InventoryService inventoryService(ProductRepository repository) {
-		return new InventoryService(repository);
+	public InventoryService inventoryService(ProductRepository repository, ReservationRepository reservationRepository) {
+		return new InventoryService(repository, reservationRepository);
 	}
 
 }

@@ -1,16 +1,13 @@
 package de.unistuttgart.t2.inventory.repository;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -51,7 +48,7 @@ public class InventoryItem {
     @JsonProperty("description")
     private String description;
 
-    // number units of this product. never less than the sum of all reservations.
+    /** number units of this product. never less than the sum of all reservations.*/
     @Column(name = "units")
     @JsonProperty("units")
     private int units;
@@ -61,35 +58,31 @@ public class InventoryItem {
     private double price;
     
     
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "item_reservation_mapping", 
-      joinColumns = {@JoinColumn(name = "item_id", referencedColumnName = "id")},
-      inverseJoinColumns = {@JoinColumn(name = "reservation_id", referencedColumnName = "id")})
-    @MapKey(name = "userId")
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     @JsonProperty("reservations")
-    private Map<String, Reservation> reservations;
+    private List<Reservation> reservations;
 
     /**
      * because spring framework wants this.
      */
     public InventoryItem() {
-        this("", "", "", 0, 0, new HashMap<String, Reservation>());
+        this("", "", "", 0, 0, new ArrayList<Reservation>());
     }
 
     public InventoryItem(String id, String name, String description, int units, double price) {
-        this(id, name, description, units, price, new HashMap<String, Reservation>());
+        this(id, name, description, units, price, new ArrayList<Reservation>());
     }
 
     @JsonCreator
     public InventoryItem(String id, String name, String description, int units, double price,
-            Map<String, Reservation> reservations) {
+            List<Reservation> reservations) {
         super();
         this.id = id;
         this.name = name;
         this.description = description;
         this.units = units;
         this.price = price;
-        this.reservations = new HashMap<>(reservations);
+        this.reservations = new ArrayList<>(reservations);
     }
 
     public String getId() {
@@ -124,7 +117,7 @@ public class InventoryItem {
         return price;
     }
 
-    public Map<String, Reservation> getReservations() {
+    public List<Reservation> getReservations() {
         return reservations;
     }
 
@@ -155,7 +148,7 @@ public class InventoryItem {
      */
     @JsonIgnore
     public int getAvailableUnits() {
-        int availableUnits = units - reservations.values().stream().map(r -> r.getUnits()).reduce(0, Integer::sum);
+        int availableUnits = units - reservations.stream().map(r -> r.getUnits()).reduce(0, Integer::sum);
         if (availableUnits < 0) {
             throw new IllegalStateException(
                     String.format("%d units reserved, eventhough only %d are in stock", units - availableUnits, units));
@@ -185,11 +178,13 @@ public class InventoryItem {
         if (unitsToReserve == 0) {
             return;
         }
-        if (reservations.containsKey(sessionId)) {
-            reservations.get(sessionId).updateUnits(unitsToReserve);
-        } else {
-            reservations.put(sessionId, new Reservation(unitsToReserve, sessionId));
+        for (Reservation reservation : reservations) {
+            if (reservation.getUserId().equals(sessionId)) {
+                reservation.updateUnits(unitsToReserve);
+                return;
+            }
         }
+        reservations.add(new Reservation(unitsToReserve, sessionId, this));
     }
 
     /**
@@ -200,8 +195,25 @@ public class InventoryItem {
      * @param sessionId to identify the reservation to be committed
      */
     public void commitReservation(String sessionId) {
-        if (reservations.containsKey(sessionId)) {
-            units -= reservations.remove(sessionId).getUnits();
+        for (Reservation reservation : reservations) {
+            if (reservation.getUserId().equals(sessionId)) {
+                units -= reservation.getUnits();
+                reservations.remove(reservation);
+                return;
+            }
+        }
+    }
+    
+    /**
+     * 
+     * @param sessionId
+     */
+    public void deleteReservation(String sessionId) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getUserId().equals(sessionId)) {
+                reservations.remove(reservation);
+                return;
+            }
         }
     }
 }

@@ -30,29 +30,16 @@ import de.unistuttgart.t2.inventory.repository.Reservation;
  * @author maumau
  *
  */
-public class ControllerTest {
+public class ControllerTest extends RepositoryTests{
 	
 	@Autowired
 	InventoryService inventoryService;
 	
-	@Autowired
-	ProductRepository productRepository;
-	
-
 	InventoryController controller;
-	
-	String id1, id2;
-	
 
 	@BeforeEach
-	void populateRepository() {
-		InventoryItem item1 = new InventoryItem("id1", "name1", "description1", 15, 0.5,
-				Map.of("session1", new Reservation(1, "session1"), "session2", new Reservation(2, "session2"), "session3", new Reservation(3, "session3")));
-		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of("session1", new Reservation(4, "session1")));
-		id1 = productRepository.save(item1).getId();
-		id2 = productRepository.save(item2).getId();
-		
-		controller= new InventoryController(inventoryService, new DataGenerator(productRepository, 0));
+	void prepareController() {
+		controller = new InventoryController(inventoryService, new DataGenerator(productRepository, 0));
 	}
 
 	@Test

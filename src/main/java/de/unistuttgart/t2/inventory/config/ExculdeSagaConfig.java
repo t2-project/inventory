@@ -29,7 +29,7 @@ import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfigur
 	    DataSourceTransactionManagerAutoConfiguration.class, 
 	    HibernateJpaAutoConfiguration.class
 	})
-@Profile("nosaga")
+@Profile("nothing")
 @Configuration
 public class ExculdeSagaConfig {
 

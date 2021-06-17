@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 import de.unistuttgart.t2.inventory.repository.Reservation;
+import de.unistuttgart.t2.inventory.repository.ReservationRepository;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
@@ -30,25 +34,7 @@ import de.unistuttgart.t2.inventory.repository.Reservation;
  * @author maumau
  *
  */
-public class AddReservationTests {
-
-	@Autowired
-	ProductRepository productRepository;
-	
-	String id1, id2;
-	
-	String session1 = "session1";
-	String session2 = "session2";
-	String session3 = "session3";
-
-	@BeforeEach
-	void populateRepository() {
-		InventoryItem item1 = new InventoryItem("id1", "name1", "description1", 15, 0.5,
-				Map.of(session1, new Reservation(1,session1), session2, new Reservation(2,session2), "session3", new Reservation(3, session3)));
-		InventoryItem item2 = new InventoryItem("id2", "name2", "description2", 200, 1.5, Map.of(session1, new Reservation(4,session1)));
-		id1 = productRepository.save(item1).getId();
-		id2 = productRepository.save(item2).getId();
-	}
+public class AddReservationTests extends RepositoryTests{
 
 	@DisplayName("testMakeNewReservation")
 	@Test
@@ -60,11 +46,13 @@ public class AddReservationTests {
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Reservation> actual = productRepository.findById(id1).get().getReservations();
+		List<Reservation> actuals = productRepository.findById(id1).get().getReservations();
 
-		assertEquals(4, actual.size());
-		assertTrue(actual.containsKey(key));
-		assertEquals(1, actual.get(key).getUnits());
+		assertEquals(4, actuals.size());
+		
+		Reservation actual = getReservation(actuals, key);
+		
+		assertEquals(1, actual.getUnits());
 	}
 	
 	@DisplayName("testMakeNoNewReservation")
@@ -77,10 +65,11 @@ public class AddReservationTests {
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Reservation> actual = productRepository.findById(id1).get().getReservations();
+		List<Reservation> actual = productRepository.findById(id1).get().getReservations();
 
 		assertEquals(3, actual.size());
-		assertFalse(actual.containsKey(key));
+		actual = actual.stream().filter(r -> r.getUserId().equals(key)).collect(Collectors.toList());
+		assertTrue(actual.isEmpty());
 	}
 
 	@DisplayName("testIncreaseReservation")
@@ -93,11 +82,13 @@ public class AddReservationTests {
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Reservation> actual = productRepository.findById(id1).get().getReservations();
+		List<Reservation> actual = productRepository.findById(id1).get().getReservations();
 
 		assertEquals(3, actual.size());
-		assertTrue(actual.containsKey(key));
-		assertEquals(2, actual.get(key).getUnits());
+	    actual = actual.stream().filter(r -> r.getUserId().equals(key)).collect(Collectors.toList());
+
+		assertEquals(1, actual.size());
+		assertEquals(2, actual.get(0).getUnits());
 	}
 
 	@DisplayName("testUnchangedReservation")
@@ -110,11 +101,13 @@ public class AddReservationTests {
 		// assert things
 		assertEquals(2, productRepository.count());
 
-		Map<String, Reservation> actual = productRepository.findById(id1).get().getReservations();
+		List<Reservation> actual = productRepository.findById(id1).get().getReservations();
 
 		assertEquals(3, actual.size());
-		assertTrue(actual.containsKey(key));
-		assertEquals(1, actual.get(key).getUnits());
+		actual = actual.stream().filter(r -> r.getUserId().equals(key)).collect(Collectors.toList());
+
+		assertEquals(1, actual.size());
+		assertEquals(1, actual.get(0).getUnits());
 	}
 	
 	@DisplayName("testIAEProductId")
@@ -157,3 +150,4 @@ public class AddReservationTests {
 		});
 	}
 }
+
