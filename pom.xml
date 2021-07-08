@@ -101,17 +101,21 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- tracing -->
+        <!-- tracing, monitoring -->
         <dependency>
 	        <groupId>io.opentracing.contrib</groupId>
 		    <artifactId>opentracing-spring-jaeger-cloud-starter</artifactId>
     		<version>${JAEGER_VERSION}</version>
 	    </dependency>
-        <!--health-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+	    <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>${MICROMETER_VERSION}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
