@@ -16,11 +16,7 @@ import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfigur
  * @author maumau
  *
  */
-@EnableAutoConfiguration(exclude = {
-        TramMessagingCommonAutoConfiguration.class, 
-        TramConsumerJdbcAutoConfiguration.class})
 @Configuration
-@Profile("notsaga")
 public class TimeoutCollectorConfig {
 
     @Bean
