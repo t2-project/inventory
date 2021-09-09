@@ -5,27 +5,31 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
+import de.unistuttgart.t2.inventory.repository.Reservation;
+import de.unistuttgart.t2.inventory.repository.ReservationRepository;
 
 /**
  * 
  * Interactions with the product repository that involve reservations.
  * 
- * too many failed attempts to fix the transaction thing later. whatever. 
- * just don't replicate the inventory.
- * 
- * Once i start replicating the inventory, the 'synchronized' won't help anymore
- * though.
- * 
  * @author maumau
  *
  */
+@Transactional
 public class InventoryService {
 
-    @Autowired
-    ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final ReservationRepository reservationRepository;
+    
+    public InventoryService(@Autowired ProductRepository productRepository, @Autowired ReservationRepository reservationRepository) {
+        assert(productRepository != null && reservationRepository != null);
+        this.productRepository = productRepository;
+        this.reservationRepository = reservationRepository;
+    }
 
     /**
      * commit reservations associated with given sessionId.
@@ -33,13 +37,11 @@ public class InventoryService {
      * @param sessionId to identify the reservations to delete
      */
     public void handleSagaAction(String sessionId) {
-        synchronized (this) {
             List<InventoryItem> items = productRepository.findAll();
             for (InventoryItem item : items) {
                 item.commitReservation(sessionId);
             }
             productRepository.saveAll(items);
-        }
     }
 
     /**
@@ -48,13 +50,19 @@ public class InventoryService {
      * @param sessionId to identify which reservations to delete
      */
     public void handleSagaCompensation(String sessionId) {
-        synchronized (this) {
             List<InventoryItem> items = productRepository.findAll();
             for (InventoryItem item : items) {
-                item.getReservations().remove(sessionId);
+                item.deleteReservation(sessionId);
+                
             }
             productRepository.saveAll(items);
-        }
+            
+            List<Reservation> reservations = reservationRepository.findAll();
+            for (Reservation reservation : reservations) {
+                if(reservation.getUserId().equals(sessionId)) {
+                    reservationRepository.delete(reservation);
+                }
+            }
     }
 
     /**
@@ -71,12 +79,10 @@ public class InventoryService {
             throw new IllegalArgumentException(
                     "productId : " + productId + ", sessionId : " + sessionId + ", units : " + units);
         }
-        synchronized (this) {
-            InventoryItem item = productRepository.findById(productId).orElseThrow(
-                    () -> new NoSuchElementException(String.format("product with id %s not found", productId)));
+        InventoryItem item = productRepository.findById(productId).orElseThrow(
+                () -> new NoSuchElementException(String.format("product with id %s not found", productId)));
 
-            item.addReservation(sessionId, units);
-            return productRepository.save(item);
-        }
+        item.addReservation(sessionId, units);
+        return productRepository.save(item);
     }
 }

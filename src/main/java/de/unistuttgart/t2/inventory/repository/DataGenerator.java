@@ -11,9 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-import de.unistuttgart.t2.common.CartContent;
 
 /**
  * Generates new products into the product repository or or restocks existing ones. 
@@ -27,20 +24,16 @@ import de.unistuttgart.t2.common.CartContent;
 public class DataGenerator {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    ProductRepository repository;
-
-    RestTemplate template = new RestTemplate();
-
-    @Value("${t2.inventory.size:20}")
-    protected int inventorySize;
-
-    @Value("${t2.cart.url}")
-    private String cartUrl;
- 
-    private int cartSize = 3;
-    private Random random = new Random(5);
+    
+    private final ProductRepository repository;
+    private int inventorySize;
+    private final Random random = new Random(5);
+    
+    public DataGenerator(@Autowired ProductRepository repository, @Value("${t2.inventory.size:0}") int inventorySize) {
+        assert(repository != null);
+        this.repository = repository;
+        this.inventorySize = inventorySize;
+    }
 
     /**
      * Generates products into the product repository.

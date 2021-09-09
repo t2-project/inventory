@@ -3,6 +3,16 @@ package de.unistuttgart.t2.inventory.repository;
 import java.time.Instant;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 /**
  * A Reservation of a certain number of units.
  * 
@@ -13,40 +23,70 @@ import java.util.Date;
  * @author maumau
  *
  */
+@Entity
+@Table(name = "reservations")
 public class Reservation {
+    
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
+    
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_on")
     private Date creationDate;
+    @Column(name = "units")
     private int units;
+    
+    @Column(name = "userId")
+    private String userId;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    public InventoryItem item;
 
     public Reservation() {
-        creationDate = Date.from(Instant.now());
+        this(0,Date.from(Instant.now()), "", null);
     }
 
-    public Reservation(int units) {
-        this();
+    public Reservation(int units, String userId, InventoryItem item) {
+        this(units, Date.from(Instant.now()), userId, item);
+    }
+
+    protected Reservation(int units, Date date, String userId, InventoryItem item) {
+        super();
         this.units = units;
+        this.creationDate = date;
+        this.userId = userId;
+        this.item = item;
     }
 
+    public int getId() {
+        return id;
+    }
+    
+    public String getUserId() {
+        return userId;
+    }
+    
+    
     public int getUnits() {
         return units;
     }
     
     /** 
      * 
-     * set number of units and also renew the creation date. 
+     * increase number of units by 'update' and also renew the creation date. 
      * 
-     * @param units new number of reserved units
+     * @param update additionally reserved units
      */
-    public void setUnits(int units) {
-        this.units = units;
+    public void updateUnits(int update) {
+        this.units = units + update;
         renewCreationdate();
     }
 
     public Date getCreationDate() {
         return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     /**
@@ -65,11 +105,13 @@ public class Reservation {
         if (!(o instanceof Reservation)) {
             return false;
         }
-        return this.creationDate.equals(((Reservation) o).creationDate) && this.units == ((Reservation) o).units;
+        return this.userId.equals(((Reservation) o).userId);
     }
 
     @Override
     public String toString() {
-        return "Reservation [creationDate=" + creationDate + ", units=" + units + "]";
+        return "Reservation [id=" + id + ", creationDate=" + creationDate + ", units=" + units + ", userId=" + userId
+                + ", item=" + item + "]";
     }
+
 }

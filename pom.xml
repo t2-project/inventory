@@ -15,17 +15,8 @@
 	<name>inventory</name>
 	<description>inventory for t2 store</description>
 	<properties>
-		<java.version>8</java.version>
+		<java.version>11</java.version>
 	</properties>
-
-<!-- not necessary with newer version since they are in the default (?) maven repo
-	<repositories>
-		<repository>
-			<id>eventuate-tram-repos</id>
-			<name>eventuate-tram-repos</name>
-			<url>https://jcenter.bintray.com/</url>
-		</repository>
-	</repositories> -->
 
 	<dependencies>
 		<dependency>
@@ -38,11 +29,6 @@
 			<scope>test</scope>
 		</dependency>
 
-        <!-- for inventory db -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
         <!-- generates rest endpoints for inventory db-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -94,7 +80,6 @@
 			<artifactId>eventuate-tram-spring-consumer-kafka</artifactId>
 			<version>${TRAM_VERSION}</version>
 		</dependency>
-        <!-- don't remember what this is for -->
 		<dependency>
 			<groupId>io.eventuate.tram.core</groupId>
 			<artifactId>eventuate-tram-spring-optimistic-locking</artifactId>
@@ -107,25 +92,30 @@
 			<artifactId>common</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
+        
+        <!-- embedded database for unit tests -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>test</scope>
+        </dependency>
 
-		<!-- db for unit test -->
-		<dependency>
-			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-        <!-- tracing -->
+        <!-- tracing, monitoring -->
         <dependency>
 	        <groupId>io.opentracing.contrib</groupId>
 		    <artifactId>opentracing-spring-jaeger-cloud-starter</artifactId>
     		<version>${JAEGER_VERSION}</version>
 	    </dependency>
-        <!--health-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+	    <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>${MICROMETER_VERSION}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -134,14 +124,25 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${JACOCO_VERSION}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
-	</build>
+    </build>
 </project>
