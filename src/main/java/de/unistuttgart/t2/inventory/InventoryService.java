@@ -42,6 +42,13 @@ public class InventoryService {
                 item.commitReservation(sessionId);
             }
             productRepository.saveAll(items);
+            
+            List<Reservation> reservations = reservationRepository.findAll();
+            for (Reservation reservation : reservations) {
+                if(reservation.getUserId().equals(sessionId)) {
+                    reservationRepository.delete(reservation);
+                }
+            }
     }
 
     /**
