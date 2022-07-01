@@ -13,26 +13,25 @@ import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 
 @Import({ IncludeSagaConfig.class, ExculdeSagaConfig.class })
-@EnableJpaRepositories(basePackageClasses = {	ProductRepository.class,
-												ReservationRepository.class })
+@EnableJpaRepositories(basePackageClasses = { ProductRepository.class, ReservationRepository.class })
 @EnableTransactionManagement
 @SpringBootApplication(scanBasePackageClasses = BaseScan.class)
 public class InventoryApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(InventoryApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(InventoryApplication.class, args);
+    }
 
-	@Bean
-	public InventoryService inventoryService(ProductRepository repository,
-		ReservationRepository reservationRepository) {
-		return new InventoryService(repository, reservationRepository);
-	}
+    @Bean
+    public InventoryService inventoryService(ProductRepository repository,
+        ReservationRepository reservationRepository) {
+        return new InventoryService(repository, reservationRepository);
+    }
 
-	@Bean
-	public OpenAPI customOpenAPI() {
-		return new OpenAPI().components(new Components())
-			.info(new Info().title("Inventory service API")
-				.description("API of the T2 Store's inventory service."));
-	}
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI().components(new Components())
+            .info(new Info().title("Inventory service API")
+                .description("API of the T2 Store's inventory service."));
+    }
 }
