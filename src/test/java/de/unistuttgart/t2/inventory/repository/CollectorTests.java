@@ -24,7 +24,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test the correct collection of reservations that exceede their TTL.
  * 
  * @author maumau
- *
  */
 class CollectorTests {
 
@@ -62,12 +61,12 @@ class CollectorTests {
                 assertEquals(1, items.size());
                 assertTrue(reserve.isEmpty());
                 assertTrue(items.get(0).getReservations().isEmpty());
-                
+
                 return;
             }
             Thread.sleep(1000);
         }
-        
+
         fail("reservation is still not deletable");
     }
 }

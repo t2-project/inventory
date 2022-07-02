@@ -13,20 +13,19 @@ import de.unistuttgart.t2.inventory.repository.Reservation;
 import de.unistuttgart.t2.inventory.repository.ReservationRepository;
 
 /**
- * 
  * Interactions with the product repository that involve reservations.
  * 
  * @author maumau
- *
  */
 @Transactional
 public class InventoryService {
 
     private final ProductRepository productRepository;
     private final ReservationRepository reservationRepository;
-    
-    public InventoryService(@Autowired ProductRepository productRepository, @Autowired ReservationRepository reservationRepository) {
-        assert(productRepository != null && reservationRepository != null);
+
+    public InventoryService(@Autowired ProductRepository productRepository,
+        @Autowired ReservationRepository reservationRepository) {
+        assert (productRepository != null && reservationRepository != null);
         this.productRepository = productRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -37,18 +36,18 @@ public class InventoryService {
      * @param sessionId to identify the reservations to delete
      */
     public void handleSagaAction(String sessionId) {
-            List<InventoryItem> items = productRepository.findAll();
-            for (InventoryItem item : items) {
-                item.commitReservation(sessionId);
+        List<InventoryItem> items = productRepository.findAll();
+        for (InventoryItem item : items) {
+            item.commitReservation(sessionId);
+        }
+        productRepository.saveAll(items);
+
+        List<Reservation> reservations = reservationRepository.findAll();
+        for (Reservation reservation : reservations) {
+            if (reservation.getUserId().equals(sessionId)) {
+                reservationRepository.delete(reservation);
             }
-            productRepository.saveAll(items);
-            
-            List<Reservation> reservations = reservationRepository.findAll();
-            for (Reservation reservation : reservations) {
-                if(reservation.getUserId().equals(sessionId)) {
-                    reservationRepository.delete(reservation);
-                }
-            }
+        }
     }
 
     /**
@@ -57,19 +56,19 @@ public class InventoryService {
      * @param sessionId to identify which reservations to delete
      */
     public void handleSagaCompensation(String sessionId) {
-            List<InventoryItem> items = productRepository.findAll();
-            for (InventoryItem item : items) {
-                item.deleteReservation(sessionId);
-                
+        List<InventoryItem> items = productRepository.findAll();
+        for (InventoryItem item : items) {
+            item.deleteReservation(sessionId);
+
+        }
+        productRepository.saveAll(items);
+
+        List<Reservation> reservations = reservationRepository.findAll();
+        for (Reservation reservation : reservations) {
+            if (reservation.getUserId().equals(sessionId)) {
+                reservationRepository.delete(reservation);
             }
-            productRepository.saveAll(items);
-            
-            List<Reservation> reservations = reservationRepository.findAll();
-            for (Reservation reservation : reservations) {
-                if(reservation.getUserId().equals(sessionId)) {
-                    reservationRepository.delete(reservation);
-                }
-            }
+        }
     }
 
     /**
@@ -84,10 +83,10 @@ public class InventoryService {
     public InventoryItem makeReservation(String productId, String sessionId, int units) throws NoSuchElementException {
         if (productId == null || sessionId == null || units < 0) {
             throw new IllegalArgumentException(
-                    "productId : " + productId + ", sessionId : " + sessionId + ", units : " + units);
+                "productId : " + productId + ", sessionId : " + sessionId + ", units : " + units);
         }
         InventoryItem item = productRepository.findById(productId).orElseThrow(
-                () -> new NoSuchElementException(String.format("product with id %s not found", productId)));
+            () -> new NoSuchElementException(String.format("product with id %s not found", productId)));
 
         item.addReservation(sessionId, units);
         return productRepository.save(item);

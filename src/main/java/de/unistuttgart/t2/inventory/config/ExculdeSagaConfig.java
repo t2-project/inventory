@@ -8,21 +8,15 @@ import io.eventuate.tram.spring.consumer.jdbc.TramConsumerJdbcAutoConfiguration;
 import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfiguration;
 
 /**
- * Configuration that excludes saga related things.
- * 
- * Supposed to be use in case i want to run the payment without the other
- * components.
- * 
- * Tram* are from the actual saga and Data* and Hibernate are from the db, that
- * the CDC needs.
+ * Configuration that excludes saga related things. Supposed to be use in case i want to run the payment without the
+ * other components. Tram* are from the actual saga and Data* and Hibernate are from the db, that the CDC needs.
  * 
  * @author maumau
- *
  */
 @EnableAutoConfiguration(exclude = {
-		TramMessagingCommonAutoConfiguration.class, 
-	    TramConsumerJdbcAutoConfiguration.class
-	})
+                                     TramMessagingCommonAutoConfiguration.class,
+                                     TramConsumerJdbcAutoConfiguration.class
+})
 @Profile("notsaga")
 @Configuration
 public class ExculdeSagaConfig {

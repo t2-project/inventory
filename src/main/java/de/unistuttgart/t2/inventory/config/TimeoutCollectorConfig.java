@@ -14,7 +14,6 @@ import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfigur
  * Configuration to have all beans required for the {@link TimeoutCollector TimeoutCollector}.
  * 
  * @author maumau
- *
  */
 @Configuration
 public class TimeoutCollectorConfig {

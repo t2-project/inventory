@@ -46,7 +46,7 @@ public class InventoryItemTests {
     @Test
     public void testAvailableUnits_exception() {
         item = new InventoryItem("id", "name", "description", 0, 0.5, List.of(new Reservation(3, "foo", item)));
-        
+
         Assertions.assertThrows(IllegalStateException.class, () -> {
             item.getAvailableUnits();
         });
@@ -120,5 +120,4 @@ public class InventoryItemTests {
         assertTrue(other.equals(item));
 
     }
-
 }
