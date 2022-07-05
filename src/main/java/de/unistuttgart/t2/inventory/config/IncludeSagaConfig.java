@@ -16,31 +16,27 @@ import io.eventuate.tram.spring.messaging.producer.jdbc.TramMessageProducerJdbcC
 import io.eventuate.tram.spring.optimisticlocking.OptimisticLockingDecoratorConfiguration;
 
 /**
- * Configuration to run application with saga. 
- * 
- * Supposed to be used when CDC service is up and running somewhere.
+ * Configuration to run application with saga. Supposed to be used when CDC service is up and running somewhere.
  * 
  * @author maumau
- *
  */
 @Import({ SagaParticipantConfiguration.class, TramMessageProducerJdbcConfiguration.class,
-		EventuateTramKafkaMessageConsumerConfiguration.class, OptimisticLockingDecoratorConfiguration.class})
+          EventuateTramKafkaMessageConsumerConfiguration.class, OptimisticLockingDecoratorConfiguration.class })
 @EnableJpaRepositories
 @EnableAutoConfiguration
 @Profile("saga")
 @Configuration
 public class IncludeSagaConfig {
 
-	@Bean
-	public InventoryCommandHandler inventoryCommandHandler() {
-		return new InventoryCommandHandler();
-	}
+    @Bean
+    public InventoryCommandHandler inventoryCommandHandler() {
+        return new InventoryCommandHandler();
+    }
 
-	@Bean
-	public SagaCommandDispatcher inventoryCommandDispatcher(InventoryCommandHandler target,
-			SagaCommandDispatcherFactory sagaCommandDispatcherFactory) {
+    @Bean
+    public SagaCommandDispatcher inventoryCommandDispatcher(InventoryCommandHandler target,
+        SagaCommandDispatcherFactory sagaCommandDispatcherFactory) {
 
-		return sagaCommandDispatcherFactory.make("inventoryCommandDispatcher", target.commandHandlers());
-	}
-
+        return sagaCommandDispatcherFactory.make("inventoryCommandDispatcher", target.commandHandlers());
+    }
 }

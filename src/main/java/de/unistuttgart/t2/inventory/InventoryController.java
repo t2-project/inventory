@@ -13,13 +13,9 @@ import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import io.swagger.v3.oas.annotations.Operation;
 
 /**
- * 
- * Defines additional endpoints for the inventory.
- * 
- * Other endpoints are auto generated.
+ * Defines additional endpoints for the inventory. Other endpoints are auto generated.
  * 
  * @author maumau
- *
  */
 @RestController
 public class InventoryController {
@@ -44,15 +40,13 @@ public class InventoryController {
     @PostMapping("/inventory/reservation")
     public Product addReservation(@RequestBody ReservationRequest body) {
         InventoryItem item = inventoryService.makeReservation(body.getProductId(), body.getSessionId(),
-                body.getUnits());
+            body.getUnits());
         return new Product(item.getId(), item.getName(), item.getDescription(), item.getAvailableUnits(),
-                item.getPrice());
+            item.getPrice());
     }
 
     /**
-     * trigger generation of new products
-     * 
-     * TODO post x generation request seems more reasonable
+     * trigger generation of new products TODO post x generation request seems more reasonable
      */
     @Operation(summary = "Populate the store with new products", description = "Populate the store with new products")
     @GetMapping("/generate")
@@ -61,9 +55,7 @@ public class InventoryController {
     }
 
     /**
-     * trigger restock of all products
-     * 
-     * TODO post x restock request seems more reasonable
+     * trigger restock of all products TODO post x restock request seems more reasonable
      */
     @Operation(summary = "Restock units of the store's products", description = "Restock units of the store's products")
     @GetMapping("/restock")

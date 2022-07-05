@@ -16,20 +16,15 @@ import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 
 /**
- * handles messages for the inventory service.
- * 
- * listens to the {@code inventory} queue.
- * 
- * commits reservations upon receiving a
- * {@link de.unistuttgart.t2.common.saga.commands.ActionCommand ActionCommand}
- * or deletes reservations without committing them upon receiving a
- * {@link de.unistuttgart.t2.common.saga.commands.CompensationCommand
+ * handles messages for the inventory service. listens to the {@code inventory} queue. commits reservations upon
+ * receiving a {@link de.unistuttgart.t2.common.saga.commands.ActionCommand ActionCommand} or deletes reservations
+ * without committing them upon receiving a {@link de.unistuttgart.t2.common.saga.commands.CompensationCommand
  * CompensationCommand}.
  * 
  * @author stiesssh
- *
  */
 public class InventoryCommandHandler {
+
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -37,8 +32,8 @@ public class InventoryCommandHandler {
 
     public CommandHandlers commandHandlers() {
         return SagaCommandHandlersBuilder.fromChannel(SagaCommand.inventory)
-                .onMessage(ActionCommand.class, this::commitReservation)
-                .onMessage(CompensationCommand.class, this::undoReservations).build();
+            .onMessage(ActionCommand.class, this::commitReservation)
+            .onMessage(CompensationCommand.class, this::undoReservations).build();
     }
 
     /**

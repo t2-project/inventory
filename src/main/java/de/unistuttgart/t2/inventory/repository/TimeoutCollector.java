@@ -16,13 +16,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
 /**
- * Periodically checks all reservations and deletes those whose time to life has
- * been exceeded.
- * 
- * TODO : ensure that only reservations that are not part of a running saga are deleted
+ * Periodically checks all reservations and deletes those whose time to life has been exceeded. TODO : ensure that only
+ * reservations that are not part of a running saga are deleted
  * 
  * @author maumau
- *
  */
 @Component
 public class TimeoutCollector {
@@ -46,9 +43,9 @@ public class TimeoutCollector {
      */
     @Autowired
     public TimeoutCollector(@Value("${t2.inventory.TTL:0}") final long TTL,
-            @Value("${t2.inventory.taskRate:0}") final int taskRate,
-            @Autowired final ThreadPoolTaskScheduler taskScheduler, @Autowired final ReservationRepository repository,
-            @Autowired final ProductRepository itemRepository) {
+        @Value("${t2.inventory.taskRate:0}") final int taskRate,
+        @Autowired final ThreadPoolTaskScheduler taskScheduler, @Autowired final ReservationRepository repository,
+        @Autowired final ProductRepository itemRepository) {
         assert (TTL >= 0 && taskRate >= 0 && taskScheduler != null && repository != null && itemRepository != null);
         this.TTL = TTL;
         this.taskRate = taskRate;
@@ -60,7 +57,6 @@ public class TimeoutCollector {
 
     /**
      * Schedule the task to check reservations and delete them if necessary.
-     * 
      * <p>
      * If either the TTL or the taskRate is 0, no task will be scheduled.
      */
@@ -72,17 +68,13 @@ public class TimeoutCollector {
     }
 
     /**
-     * The Task that does the actual checking and deleting of reservations.
-     * 
-     * TODO how do i prevent this from collection 'in progress' sagas? TODO 'father
-     * less' reservations are only caused when orchestrator is down. I could flag
-     * the reservations as 'PENDING' (not yet ordered) 'PROCESSING' (saga runs) or
-     * 'DONE' (you may delete) and frequently delete 'DONE', scarcely delete
-     * 'PENDING' (i.e. after cookie death) and report 'PROCESSING' after some time
-     * as major erro...
+     * The Task that does the actual checking and deleting of reservations. TODO how do i prevent this from collection
+     * 'in progress' sagas? TODO 'father less' reservations are only caused when orchestrator is down. I could flag the
+     * reservations as 'PENDING' (not yet ordered) 'PROCESSING' (saga runs) or 'DONE' (you may delete) and frequently
+     * delete 'DONE', scarcely delete 'PENDING' (i.e. after cookie death) and report 'PROCESSING' after some time as
+     * major erro...
      * 
      * @author maumau
-     *
      */
     protected class RecervationCheckAndDeleteTask implements Runnable {
 

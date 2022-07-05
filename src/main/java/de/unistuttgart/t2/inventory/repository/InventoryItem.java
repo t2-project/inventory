@@ -18,37 +18,33 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A Product in the inventory.
- * 
- * Each product has some describing attributes such as a name, a description and
- * a price, as well as the number of units in stock. If a user placed units of
- * product in their cart, that product has some reservations attached. The
- * actual number of unit in stock shall only ever be changed by committing
- * reservations (c.f. {@link InventoryItem#commitReservation(String)}})
- * 
+ * A Product in the inventory. Each product has some describing attributes such as a name, a description and a price, as
+ * well as the number of units in stock. If a user placed units of product in their cart, that product has some
+ * reservations attached. The actual number of unit in stock shall only ever be changed by committing reservations (c.f.
+ * {@link InventoryItem#commitReservation(String)}})
  * 
  * @author maumau
- *
  */
 @Entity
 @Table(name = "inventory_item")
 public class InventoryItem {
+
     @Id
     @Column(name = "id")
     @JsonProperty("id")
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-    
+
     @Column(name = "name")
     @JsonProperty("name")
     private String name;
-    
+
     @Column(name = "description")
     @JsonProperty("description")
     private String description;
 
-    /** number units of this product. never less than the sum of all reservations.*/
+    /** number units of this product. never less than the sum of all reservations. */
     @Column(name = "units")
     @JsonProperty("units")
     private int units;
@@ -56,8 +52,7 @@ public class InventoryItem {
     @Column(name = "price")
     @JsonProperty("price")
     private double price;
-    
-    
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     @JsonProperty("reservations")
     private List<Reservation> reservations;
@@ -75,7 +70,7 @@ public class InventoryItem {
 
     @JsonCreator
     public InventoryItem(String id, String name, String description, int units, double price,
-            List<Reservation> reservations) {
+        List<Reservation> reservations) {
         super();
         this.id = id;
         this.name = name;
@@ -92,7 +87,7 @@ public class InventoryItem {
     public String getName() {
         return name;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -102,7 +97,6 @@ public class InventoryItem {
     }
 
     /**
-     * 
      * set the units. cannot be used to decrease the number of units.
      * 
      * @param units new number of unit in stock
@@ -133,14 +127,12 @@ public class InventoryItem {
         }
 
         return this.id.equals(((InventoryItem) o).id) && this.name.equals(((InventoryItem) o).name)
-                && this.description.equals(((InventoryItem) o).description) && this.units == ((InventoryItem) o).units
-                && this.price == ((InventoryItem) o).price;
+            && this.description.equals(((InventoryItem) o).description) && this.units == ((InventoryItem) o).units
+            && this.price == ((InventoryItem) o).price;
     }
 
     /**
-     * Calculate the number of available units.
-     * 
-     * The number of available units is
+     * Calculate the number of available units. The number of available units is
      * {@code units in stock - sum of reserved units}
      * 
      * @return number of not yet reserved units of this product
@@ -151,29 +143,25 @@ public class InventoryItem {
         int availableUnits = units - reservations.stream().map(r -> r.getUnits()).reduce(0, Integer::sum);
         if (availableUnits < 0) {
             throw new IllegalStateException(
-                    String.format("%d units reserved, eventhough only %d are in stock", units - availableUnits, units));
+                String.format("%d units reserved, eventhough only %d are in stock", units - availableUnits, units));
         }
         return availableUnits;
     }
 
     /**
-     * Add to or updated the products reservations.
-     * 
-     * If a reservation for the given {@code sessionId} already exists, the existing
-     * reservation is updated, otherwise a new reservation is added. However, a
-     * reservation is only added or updated reservations if enough products are
-     * available.
+     * Add to or updated the products reservations. If a reservation for the given {@code sessionId} already exists, the
+     * existing reservation is updated, otherwise a new reservation is added. However, a reservation is only added or
+     * updated reservations if enough products are available.
      * 
      * @param sessionId      to identify user
      * @param unitsToReserve number of units to reserve
-     * @throws IllegalArgumentException if not enough units available or otherwise
-     *                                  illegal arguments
+     * @throws IllegalArgumentException if not enough units available or otherwise illegal arguments
      */
     public void addReservation(String sessionId, int unitsToReserve) {
         if (unitsToReserve > getAvailableUnits() || unitsToReserve < 0) {
             throw new IllegalArgumentException(String.format(
-                    "illegal amount of units to reserve: tried ro reserve %d units of product %s, but only %d are available",
-                    unitsToReserve, id, getAvailableUnits()));
+                "illegal amount of units to reserve: tried ro reserve %d units of product %s, but only %d are available",
+                unitsToReserve, id, getAvailableUnits()));
         }
         if (unitsToReserve == 0) {
             return;
@@ -188,9 +176,8 @@ public class InventoryItem {
     }
 
     /**
-     * remove a reservation and decrease units in stock.
-     * 
-     * always use this operation to decrease the the number of unit in stock.
+     * remove a reservation and decrease units in stock. always use this operation to decrease the the number of unit in
+     * stock.
      * 
      * @param sessionId to identify the reservation to be committed
      */
@@ -203,9 +190,8 @@ public class InventoryItem {
             }
         }
     }
-    
+
     /**
-     * 
      * @param sessionId
      */
     public void deleteReservation(String sessionId) {
