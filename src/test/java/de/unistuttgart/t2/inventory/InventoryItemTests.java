@@ -1,19 +1,12 @@
 package de.unistuttgart.t2.inventory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import de.unistuttgart.t2.inventory.repository.InventoryItem;
-import de.unistuttgart.t2.inventory.repository.Reservation;
+import de.unistuttgart.t2.inventory.repository.*;
 
 public class InventoryItemTests {
 
@@ -34,8 +27,8 @@ public class InventoryItemTests {
     @DisplayName("testReservationNeverNull")
     @Test
     public void testReservationNeverNull() {
-        assertNotNull((new InventoryItem()).getReservations());
-        assertNotNull((new InventoryItem("", "", "", 0, 0)).getReservations());
+        assertNotNull(new InventoryItem().getReservations());
+        assertNotNull(new InventoryItem("", "", "", 0, 0).getReservations());
     }
 
     @Test

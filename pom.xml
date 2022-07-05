@@ -1,110 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.3</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>de.unistuttgart.t2</groupId>
-	<artifactId>inventory</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>inventory</name>
-	<description>inventory for t2 store</description>
-	<properties>
-		<java.version>11</java.version>
-	</properties>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.3</version>
+        <relativePath /> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>de.unistuttgart.t2</groupId>
+    <artifactId>inventory</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>inventory</name>
+    <description>inventory for t2 store</description>
+    <properties>
+        <java.version>11</java.version>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- generates rest endpoints for inventory db-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-rest</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-rest</artifactId>
+        </dependency>
 
-		<!-- for saga message / instance db-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
+        <!-- for saga message / instance db-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
 
-		<!-- for openAPI and swagger -->
-		<dependency>
-    		<groupId>org.springdoc</groupId>
-    		<artifactId>springdoc-openapi-ui</artifactId>
-    		<version>${SPRINGDOC_VERSION}</version>
-		</dependency>
-		<dependency>
-    		<groupId>org.springdoc</groupId>
-    		<artifactId>springdoc-openapi-data-rest</artifactId>
-    		<version>${SPRINGDOC_VERSION}</version>
-		</dependency>
-		
+        <!-- for openAPI and swagger -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${SPRINGDOC_VERSION}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <version>${SPRINGDOC_VERSION}</version>
+        </dependency>
 
-		<!-- SAGA THINGS -->
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-events</artifactId>
-			<version>${TRAM_VERSION}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-commands</artifactId>
-			<version>${TRAM_VERSION}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-messaging</artifactId>
-			<version>${TRAM_VERSION}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.sagas</groupId>
-			<artifactId>eventuate-tram-sagas-spring-participant</artifactId>
-			<version>${TRAM_PARTICIPANT_VERSION}</version>
-		</dependency>
 
-		<!-- FOR THE CDC -->
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-producer-jdbc</artifactId>
-			<version>${TRAM_VERSION}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-consumer-jdbc</artifactId>
-			<version>${TRAM_VERSION}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-consumer-kafka</artifactId>
-			<version>${TRAM_VERSION}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-optimistic-locking</artifactId>
-			<version>${TRAM_VERSION}</version>
-		</dependency>
+        <!-- SAGA THINGS -->
+        <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-spring-events</artifactId>
+            <version>${TRAM_VERSION}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-spring-commands</artifactId>
+            <version>${TRAM_VERSION}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-spring-messaging</artifactId>
+            <version>${TRAM_VERSION}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.eventuate.tram.sagas</groupId>
+            <artifactId>eventuate-tram-sagas-spring-participant</artifactId>
+            <version>${TRAM_PARTICIPANT_VERSION}</version>
+        </dependency>
 
-		<!-- t2 common things -->
-		<dependency>
-			<groupId>de.unistuttgart.t2</groupId>
-			<artifactId>common</artifactId>
-			<version>1.1-SNAPSHOT</version>
-		</dependency>
-        
+        <!-- FOR THE CDC -->
+        <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-spring-producer-jdbc</artifactId>
+            <version>${TRAM_VERSION}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-spring-consumer-jdbc</artifactId>
+            <version>${TRAM_VERSION}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-spring-consumer-kafka</artifactId>
+            <version>${TRAM_VERSION}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-spring-optimistic-locking</artifactId>
+            <version>${TRAM_VERSION}</version>
+        </dependency>
+
+        <!-- t2 common things -->
+        <dependency>
+            <groupId>de.unistuttgart.t2</groupId>
+            <artifactId>common</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- embedded database for unit tests -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -115,27 +113,26 @@
 
         <!-- tracing, monitoring -->
         <dependency>
-	        <groupId>io.opentracing.contrib</groupId>
-		    <artifactId>opentracing-spring-jaeger-cloud-starter</artifactId>
-    		<version>${JAEGER_VERSION}</version>
-	    </dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-	    <dependency>
+            <groupId>io.opentracing.contrib</groupId>
+            <artifactId>opentracing-spring-jaeger-cloud-starter</artifactId>
+            <version>${JAEGER_VERSION}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
-            <version>${MICROMETER_VERSION}</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -155,6 +152,6 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
+        </plugins>
     </build>
 </project>

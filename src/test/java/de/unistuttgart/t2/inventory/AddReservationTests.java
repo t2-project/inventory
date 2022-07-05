@@ -1,36 +1,25 @@
 package de.unistuttgart.t2.inventory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collector;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import de.unistuttgart.t2.inventory.repository.InventoryItem;
-import de.unistuttgart.t2.inventory.repository.ProductRepository;
 import de.unistuttgart.t2.inventory.repository.Reservation;
-import de.unistuttgart.t2.inventory.repository.ReservationRepository;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 /**
  * Test the adding of reservations.
- * 
+ *
  * @author maumau
  */
 public class AddReservationTests extends RepositoryTests {
