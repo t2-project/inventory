@@ -32,6 +32,6 @@ public class InventoryApplication {
     public OpenAPI customOpenAPI() {
         return new OpenAPI().components(new Components())
             .info(new Info().title("Inventory service API")
-                .description("API of the T2 Store's inventory service."));
+                .description("API of the T2-Project's inventory service."));
     }
 }

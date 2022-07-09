@@ -1,6 +1,6 @@
 # Inventory Service
 
-This service is the inventory of the T2 Store. 
+This service is the inventory of the T2-Project. 
 It manages the products and reservations.
 
 The products are the teas that the Store sells and reservations exist to express that a user plans to buy some units of a product.
@@ -8,7 +8,7 @@ The products are the teas that the Store sells and reservations exist to express
 
 ## Build and Run
 
-Confer the [Documentation](https://t2-documentation.readthedocs.io/en/latest/guides/kube.html) on how to build, run or deploy the T2 Store services.
+Confer the [Documentation](https://t2-documentation.readthedocs.io/en/latest/guides/kube.html) on how to build, run or deploy the T2-Project services.
 
 
 ## HTTP Endpoints
