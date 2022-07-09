@@ -1,35 +1,31 @@
 package de.unistuttgart.t2.inventory.repository;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
 /**
- * Periodically checks all reservations and deletes those whose time to life has been exceeded. TODO : ensure that only
- * reservations that are not part of a running saga are deleted
- * 
+ * Periodically checks all reservations and deletes those whose time to life has been exceeded.<br>
+ * TODO : ensure that only reservations that are not part of a running saga are deleted
+ *
  * @author maumau
  */
 @Component
-public class TimeoutCollector {
+public final class TimeoutCollector {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
     /** in seconds */
-    private long TTL;
+    private final long TTL;
     /** in milliseconds */
-    private int taskRate;
+    private final int taskRate;
 
     private final ReservationRepository repository;
     private final ProductRepository itemRepository;
@@ -37,16 +33,19 @@ public class TimeoutCollector {
 
     /**
      * Create collector.
-     * 
-     * @param TTL      the cart entries' time to live in seconds
-     * @param taskRate rate at which the collector checks the repo in milliseconds
+     *
+     * @param TTL            the cart entries' time to live in seconds
+     * @param taskRate       rate at which the collector checks the repo in milliseconds
+     * @param taskScheduler  the scheduler to use for this collector
+     * @param repository     the repository that handles the reservation data
+     * @param itemRepository the repository that handles the item data
      */
     @Autowired
     public TimeoutCollector(@Value("${t2.inventory.TTL:0}") final long TTL,
         @Value("${t2.inventory.taskRate:0}") final int taskRate,
         @Autowired final ThreadPoolTaskScheduler taskScheduler, @Autowired final ReservationRepository repository,
         @Autowired final ProductRepository itemRepository) {
-        assert (TTL >= 0 && taskRate >= 0 && taskScheduler != null && repository != null && itemRepository != null);
+        assert TTL >= 0 && taskRate >= 0 && taskScheduler != null && repository != null && itemRepository != null;
         this.TTL = TTL;
         this.taskRate = taskRate;
         this.taskScheduler = taskScheduler;
@@ -63,43 +62,36 @@ public class TimeoutCollector {
     @PostConstruct
     public void schedulePeriodically() {
         if (taskRate > 0) {
-            taskScheduler.scheduleAtFixedRate(new RecervationCheckAndDeleteTask(), taskRate);
+            taskScheduler.scheduleAtFixedRate(this::cleanup, taskRate);
         }
     }
 
     /**
-     * The Task that does the actual checking and deleting of reservations. TODO how do i prevent this from collection
-     * 'in progress' sagas? TODO 'father less' reservations are only caused when orchestrator is down. I could flag the
-     * reservations as 'PENDING' (not yet ordered) 'PROCESSING' (saga runs) or 'DONE' (you may delete) and frequently
-     * delete 'DONE', scarcely delete 'PENDING' (i.e. after cookie death) and report 'PROCESSING' after some time as
-     * major erro...
-     * 
-     * @author maumau
+     * The actual cleanup.<br>
+     * TODO how do i prevent this from collection 'in progress' sagas?<br>
+     * TODO 'father less' reservations are only caused when orchestrator is down. I could flag the reservations as
+     * 'PENDING' (not yet ordered) 'PROCESSING' (saga runs) or 'DONE' (you may delete) and frequently delete 'DONE',
+     * scarcely delete 'PENDING' (i.e. after cookie death) and report 'PROCESSING' after some time as major error...
      */
-    protected class RecervationCheckAndDeleteTask implements Runnable {
+    public void cleanup() {
+        List<Reservation> items = repository.findAll();
+        Date latestDateAlive = Date.from(Instant.now().minusSeconds(TTL));
 
-        @Override
-        public void run() {
-            List<Reservation> items = repository.findAll();
-            Date latestDateAlive = Date.from(Instant.now().minusSeconds(TTL));
+        Collection<Reservation> expiredReservations =
+            items.stream().filter(r -> r.getCreationDate().before(latestDateAlive)).collect(Collectors.toSet());
 
-            Collection<Reservation> rval = items.stream().filter((Reservation r) -> {
-                return r.getCreationDate().before(latestDateAlive);
-            }).collect(Collectors.toSet());
+        LOG.info(String.format("found %d expired reservations", expiredReservations.size()));
 
-            LOG.info(String.format("found %d expired reservations", rval.size()));
+        deleteAtItems(expiredReservations);
+        repository.deleteAll(expiredReservations);
+    }
 
-            deleteAtItems(rval);
-            repository.deleteAll(rval);
-        }
+    public void deleteAtItems(Collection<Reservation> rs) {
+        for (Reservation r : rs) {
 
-        public void deleteAtItems(Collection<Reservation> rs) {
-            for (Reservation r : rs) {
-
-                InventoryItem i = itemRepository.findById(r.item.getId()).get();
-                i.deleteReservation(r.getUserId());
-                itemRepository.save(i);
-            }
+            InventoryItem i = itemRepository.findById(r.item.getId()).get();
+            i.deleteReservation(r.getUserId());
+            itemRepository.save(i);
         }
     }
 }

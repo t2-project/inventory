@@ -11,7 +11,7 @@ import de.unistuttgart.t2.inventory.repository.TimeoutCollector;
  * @author maumau
  */
 @Configuration
-public class TimeoutCollectorConfig {
+public final class TimeoutCollectorConfig {
 
     @Bean
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {

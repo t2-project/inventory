@@ -1,28 +1,19 @@
 package de.unistuttgart.t2.inventory.repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.*;
 
 import org.hibernate.annotations.GenericGenerator;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A Product in the inventory. Each product has some describing attributes such as a name, a description and a price, as
  * well as the number of units in stock. If a user placed units of product in their cart, that product has some
  * reservations attached. The actual number of unit in stock shall only ever be changed by committing reservations (c.f.
  * {@link InventoryItem#commitReservation(String)}})
- * 
+ *
  * @author maumau
  */
 @Entity
@@ -34,15 +25,15 @@ public class InventoryItem {
     @JsonProperty("id")
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    private final String id;
 
     @Column(name = "name")
     @JsonProperty("name")
-    private String name;
+    private final String name;
 
     @Column(name = "description")
     @JsonProperty("description")
-    private String description;
+    private final String description;
 
     /** number units of this product. never less than the sum of all reservations. */
     @Column(name = "units")
@@ -51,17 +42,17 @@ public class InventoryItem {
 
     @Column(name = "price")
     @JsonProperty("price")
-    private double price;
+    private final double price;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     @JsonProperty("reservations")
-    private List<Reservation> reservations;
+    private final List<Reservation> reservations;
 
     /**
      * because spring framework wants this.
      */
     public InventoryItem() {
-        this("", "", "", 0, 0, new ArrayList<Reservation>());
+        this("", "", "", 0, 0);
     }
 
     public InventoryItem(String id, String name, String description, int units, double price) {
@@ -71,7 +62,6 @@ public class InventoryItem {
     @JsonCreator
     public InventoryItem(String id, String name, String description, int units, double price,
         List<Reservation> reservations) {
-        super();
         this.id = id;
         this.name = name;
         this.description = description;
@@ -98,7 +88,7 @@ public class InventoryItem {
 
     /**
      * set the units. cannot be used to decrease the number of units.
-     * 
+     *
      * @param units new number of unit in stock
      */
     public void setUnits(int units) {
@@ -117,7 +107,7 @@ public class InventoryItem {
 
     @Override
     public String toString() {
-        return this.id + ", " + this.name + ", " + this.description + ", " + this.units + ", " + this.price;
+        return id + ", " + name + ", " + description + ", " + units + ", " + price;
     }
 
     @Override
@@ -126,24 +116,24 @@ public class InventoryItem {
             return false;
         }
 
-        return this.id.equals(((InventoryItem) o).id) && this.name.equals(((InventoryItem) o).name)
-            && this.description.equals(((InventoryItem) o).description) && this.units == ((InventoryItem) o).units
-            && this.price == ((InventoryItem) o).price;
+        return id.equals(((InventoryItem) o).id) && name.equals(((InventoryItem) o).name)
+            && description.equals(((InventoryItem) o).description) && units == ((InventoryItem) o).units
+            && price == ((InventoryItem) o).price;
     }
 
     /**
      * Calculate the number of available units. The number of available units is
      * {@code units in stock - sum of reserved units}
-     * 
+     *
      * @return number of not yet reserved units of this product
      * @throws IllegalStateException if the reservations are too much.
      */
     @JsonIgnore
     public int getAvailableUnits() {
-        int availableUnits = units - reservations.stream().map(r -> r.getUnits()).reduce(0, Integer::sum);
+        int availableUnits = units - reservations.stream().mapToInt(Reservation::getUnits).sum();
         if (availableUnits < 0) {
             throw new IllegalStateException(
-                String.format("%d units reserved, eventhough only %d are in stock", units - availableUnits, units));
+                String.format("%d units reserved, even though only %d are in stock", units - availableUnits, units));
         }
         return availableUnits;
     }
@@ -152,7 +142,7 @@ public class InventoryItem {
      * Add to or updated the products reservations. If a reservation for the given {@code sessionId} already exists, the
      * existing reservation is updated, otherwise a new reservation is added. However, a reservation is only added or
      * updated reservations if enough products are available.
-     * 
+     *
      * @param sessionId      to identify user
      * @param unitsToReserve number of units to reserve
      * @throws IllegalArgumentException if not enough units available or otherwise illegal arguments
@@ -178,7 +168,7 @@ public class InventoryItem {
     /**
      * remove a reservation and decrease units in stock. always use this operation to decrease the the number of unit in
      * stock.
-     * 
+     *
      * @param sessionId to identify the reservation to be committed
      */
     public void commitReservation(String sessionId) {
@@ -191,15 +181,7 @@ public class InventoryItem {
         }
     }
 
-    /**
-     * @param sessionId
-     */
     public void deleteReservation(String sessionId) {
-        for (Reservation reservation : reservations) {
-            if (reservation.getUserId().equals(sessionId)) {
-                reservations.remove(reservation);
-                return;
-            }
-        }
+        reservations.removeIf(reservation -> reservation.getUserId().equals(sessionId));
     }
 }

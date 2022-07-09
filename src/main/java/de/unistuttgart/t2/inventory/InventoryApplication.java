@@ -12,7 +12,7 @@ import de.unistuttgart.t2.inventory.repository.*;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 
-@Import({ IncludeSagaConfig.class, ExculdeSagaConfig.class })
+@Import({ IncludeSagaConfig.class, ExcludeSagaConfig.class })
 @EnableJpaRepositories(basePackageClasses = { ProductRepository.class, ReservationRepository.class })
 @EnableTransactionManagement
 @SpringBootApplication(scanBasePackageClasses = BaseScan.class)

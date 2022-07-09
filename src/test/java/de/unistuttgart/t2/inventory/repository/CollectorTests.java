@@ -1,15 +1,11 @@
 package de.unistuttgart.t2.inventory.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -22,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles("test")
 /**
  * Test the correct collection of reservations that exceede their TTL.
- * 
+ *
  * @author maumau
  */
 class CollectorTests {
@@ -54,7 +50,7 @@ class CollectorTests {
             assertEquals(1, reservations.size());
             if (reservations.get(0).getCreationDate().before(Date.from(Instant.now()))) {
                 // reservation now 'collectable'
-                collector.new RecervationCheckAndDeleteTask().run();
+                collector.cleanup();
 
                 List<InventoryItem> items = productRepository.findAll();
                 List<Reservation> reserve = repository.findAll();
