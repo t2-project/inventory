@@ -37,3 +37,4 @@ build/
 # ignore all property files except the base (with no additional words in its name)
 **/*.*.properties 
 **/*.log
+/test-classes/

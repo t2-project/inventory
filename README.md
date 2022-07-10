@@ -1,6 +1,6 @@
 # Inventory Service
 
-This service is the inventory of the T2 Store. 
+This service is the inventory of the T2-Project.
 It manages the products and reservations.
 
 The products are the teas that the Store sells and reservations exist to express that a user plans to buy some units of a product.
@@ -8,7 +8,7 @@ The products are the teas that the Store sells and reservations exist to express
 
 ## Build and Run
 
-Confer the [Documentation](https://t2-documentation.readthedocs.io/en/latest/guides/kube.html) on how to build, run or deploy the T2 Store services.
+Confer the [Documentation](https://t2-documentation.readthedocs.io/en/latest/guides/kube.html) on how to build, run or deploy the T2-Project services.
 
 
 ## HTTP Endpoints
@@ -23,7 +23,7 @@ Confer the [Documentation](https://t2-documentation.readthedocs.io/en/latest/gui
 
 ### Add a Reservation
 
-Reserve 3 units of product "foo" for user "bar" (a product with that id must indeed be in the store) : 
+Reserve 3 units of product "foo" for user "bar" (a product with that id must indeed be in the store) :
 ```
 curl -i -X POST -H "Content-Type:application/json" -d '{ "productId" : "foo", "sessionId" : "bar", "units" : 3}' http://localhost:8082/inventory/reservation
 ```
@@ -42,16 +42,16 @@ If the reservation succeeds, the reply contains the product with ``units`` being
 
 ### Access the products
 
-Confere e.g. spring's [Accessing JPA Data with REST](https://spring.io/guides/gs/accessing-data-rest/) on how to talk tho the endpoints generated with spring-boot-starter-data-rest in general.
+Confere e.g. spring's [Accessing JPA Data with REST](https://spring.io/guides/gs/accessing-data-rest/) on how to talk to the endpoints generated with spring-boot-starter-data-rest in general.
 
-These endpoints can only access the products. 
-There are no endpoints to access the reservations. 
+These endpoints can only access the products.
+There are no endpoints to access the reservations.
 
-An examplatory request to GET get the product with id "foo" : 
+An examplatory request to GET get the product with id "foo" :
 ```
 curl localhost:8082/inventory/foo
 ```
-Response : 
+Response :
 ```
 {
   "name" : "Sencha (25 bags)",
@@ -72,7 +72,7 @@ Response :
 
 ### Restocking the Inventory
 
-If all items are sold out, this is how you restock all of them. 
+If all items are sold out, this is how you restock all of them.
 ```
 curl localhost:8082/restock
 ```
@@ -88,7 +88,7 @@ curl localhost:8082/generate
 (./ src/main/resources/application.properties)
 
 property | read from env var | description |
--------- | ----------------- | ----------- | 
+-------- | ----------------- | ----------- |
 spring.data.mongodb.uri | MONGO_HOST | host of the mongo db
 t2.inventory.size | INVENTORY_SIZE | number of items to be generated into the inventory repository on start up  
 t2.cart.url | T2_CART_URL | url of the cart service. must be provided to generate reservations on start up (because reservations and items in cart should be in sync)

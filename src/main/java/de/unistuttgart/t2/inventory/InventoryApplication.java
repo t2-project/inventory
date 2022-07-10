@@ -12,7 +12,7 @@ import de.unistuttgart.t2.inventory.repository.*;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 
-@Import({ IncludeSagaConfig.class, ExculdeSagaConfig.class })
+@Import({ IncludeSagaConfig.class, ExcludeSagaConfig.class })
 @EnableJpaRepositories(basePackageClasses = { ProductRepository.class, ReservationRepository.class })
 @EnableTransactionManagement
 @SpringBootApplication(scanBasePackageClasses = BaseScan.class)
@@ -32,6 +32,6 @@ public class InventoryApplication {
     public OpenAPI customOpenAPI() {
         return new OpenAPI().components(new Components())
             .info(new Info().title("Inventory service API")
-                .description("API of the T2 Store's inventory service."));
+                .description("API of the T2-Project's inventory service."));
     }
 }

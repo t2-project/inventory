@@ -1,38 +1,33 @@
 package de.unistuttgart.t2.inventory;
 
-import java.util.List;
-
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import de.unistuttgart.t2.inventory.repository.InventoryItem;
-import de.unistuttgart.t2.inventory.repository.ProductRepository;
-import de.unistuttgart.t2.inventory.repository.Reservation;
-import de.unistuttgart.t2.inventory.repository.ReservationRepository;
+import de.unistuttgart.t2.inventory.repository.*;
 
 /**
  * Interactions with the product repository that involve reservations.
- * 
+ *
  * @author maumau
  */
 @Transactional
-public class InventoryService {
+public final class InventoryService {
 
     private final ProductRepository productRepository;
     private final ReservationRepository reservationRepository;
 
     public InventoryService(@Autowired ProductRepository productRepository,
         @Autowired ReservationRepository reservationRepository) {
-        assert (productRepository != null && reservationRepository != null);
+        assert productRepository != null && reservationRepository != null;
         this.productRepository = productRepository;
         this.reservationRepository = reservationRepository;
     }
 
     /**
      * commit reservations associated with given sessionId.
-     * 
+     *
      * @param sessionId to identify the reservations to delete
      */
     public void handleSagaAction(String sessionId) {
@@ -52,7 +47,7 @@ public class InventoryService {
 
     /**
      * delete reservations of cancelled order from repository.
-     * 
+     *
      * @param sessionId to identify which reservations to delete
      */
     public void handleSagaCompensation(String sessionId) {
@@ -72,11 +67,12 @@ public class InventoryService {
     }
 
     /**
-     * attach a reservation for the given session to the given product.
-     * 
+     * attach a reservation for the given session to the given item.
+     *
      * @param productId products to reserve of
      * @param sessionId user to reserve for
      * @param units     amount to reserve
+     * @return the item where the reservation was attached
      * @throws NoSuchElementException   if the product does not exist
      * @throws IllegalArgumentException if any parameter is null
      */
