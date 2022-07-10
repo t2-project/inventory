@@ -13,7 +13,7 @@ import de.unistuttgart.t2.inventory.repository.*;
  * @author maumau
  */
 @Transactional
-public final class InventoryService {
+public class InventoryService {
 
     private final ProductRepository productRepository;
     private final ReservationRepository reservationRepository;

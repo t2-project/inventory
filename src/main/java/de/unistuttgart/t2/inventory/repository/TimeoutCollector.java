@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * @author maumau
  */
 @Component
-public final class TimeoutCollector {
+public class TimeoutCollector {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
