@@ -15,7 +15,7 @@ import io.swagger.v3.oas.models.info.Info;
 @Import({ IncludeSagaConfig.class, ExcludeSagaConfig.class })
 @EnableJpaRepositories(basePackageClasses = { ProductRepository.class, ReservationRepository.class })
 @EnableTransactionManagement
-@SpringBootApplication(scanBasePackageClasses = BaseScan.class)
+@SpringBootApplication(scanBasePackageClasses = { BaseScan.class, InventoryApplication.class })
 public class InventoryApplication {
 
     public static void main(String[] args) {
