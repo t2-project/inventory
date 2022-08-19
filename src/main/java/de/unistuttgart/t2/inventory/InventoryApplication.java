@@ -6,7 +6,6 @@ import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import de.unistuttgart.t2.common.BaseScan;
 import de.unistuttgart.t2.inventory.config.*;
 import de.unistuttgart.t2.inventory.repository.*;
 import io.swagger.v3.oas.models.*;
@@ -15,7 +14,7 @@ import io.swagger.v3.oas.models.info.Info;
 @Import({ IncludeSagaConfig.class, ExcludeSagaConfig.class })
 @EnableJpaRepositories(basePackageClasses = { ProductRepository.class, ReservationRepository.class })
 @EnableTransactionManagement
-@SpringBootApplication(scanBasePackageClasses = BaseScan.class)
+@SpringBootApplication
 public class InventoryApplication {
 
     public static void main(String[] args) {
