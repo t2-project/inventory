@@ -124,6 +124,11 @@
 
         <!-- tracing, monitoring -->
         <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-spring-cloud-sleuth-integration</artifactId>
+            <version>0.29.0.RELEASE</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
