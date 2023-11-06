@@ -34,8 +34,7 @@ public class DataGenerator {
     }
 
     /**
-     * Generates products into the product repository. Also generates cart content and reservations, if the cart service
-     * is available.
+     * Generates products into the product repository.
      */
     @PostConstruct
     public void generateProducts() {
@@ -64,7 +63,7 @@ public class DataGenerator {
     }
 
     /**
-     * restock products in the repository. at some point all products will be sold out. thus there must be an option the
+     * Restock products in the repository. at some point all products will be sold out. thus there must be an option to
      * restock them.
      */
     @Transactional
