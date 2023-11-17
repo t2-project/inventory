@@ -8,7 +8,7 @@ The products are the teas that the store sells and reservations exist to express
 
 ## Build and Run
 
-Refer to the [Documentation](https://t2-documentation.readthedocs.io/en/latest/guides/deploy.html) on how to build, run or deploy the T2-Project services.
+Refer to the [Documentation](https://t2-documentation.readthedocs.io/en/latest/microservices/deploy.html) on how to build, run or deploy the T2-Project services.
 
 
 ## HTTP Endpoints
