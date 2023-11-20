@@ -1,12 +1,13 @@
 package de.unistuttgart.t2.inventory.repository;
 
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
-import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.*;
-
-import org.hibernate.annotations.GenericGenerator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Product in the inventory. Each product has some describing attributes such as a name, a description and a price, as
@@ -23,8 +24,7 @@ public class InventoryItem {
     @Id
     @Column(name = "id")
     @JsonProperty("id")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @UuidGenerator
     private final String id;
 
     @Column(name = "name")

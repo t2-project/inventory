@@ -1,9 +1,7 @@
 package de.unistuttgart.t2.inventory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
+import de.unistuttgart.t2.inventory.repository.InventoryItem;
+import de.unistuttgart.t2.inventory.repository.Reservation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import de.unistuttgart.t2.inventory.repository.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)

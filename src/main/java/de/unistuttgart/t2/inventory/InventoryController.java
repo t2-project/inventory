@@ -1,11 +1,15 @@
 package de.unistuttgart.t2.inventory;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import de.unistuttgart.t2.common.*;
-import de.unistuttgart.t2.inventory.repository.*;
+import de.unistuttgart.t2.common.Product;
+import de.unistuttgart.t2.common.ReservationRequest;
+import de.unistuttgart.t2.inventory.repository.DataGenerator;
+import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Defines additional endpoints for the inventory. Other endpoints are auto generated.

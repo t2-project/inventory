@@ -1,11 +1,14 @@
 package de.unistuttgart.t2.inventory;
 
-import java.util.*;
-
+import de.unistuttgart.t2.inventory.repository.InventoryItem;
+import de.unistuttgart.t2.inventory.repository.ProductRepository;
+import de.unistuttgart.t2.inventory.repository.Reservation;
+import de.unistuttgart.t2.inventory.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import de.unistuttgart.t2.inventory.repository.*;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Interactions with the product repository that involve reservations.

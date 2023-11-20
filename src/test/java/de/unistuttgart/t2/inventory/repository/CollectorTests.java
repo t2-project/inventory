@@ -1,17 +1,19 @@
 package de.unistuttgart.t2.inventory.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.Instant;
-import java.util.*;
-
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
