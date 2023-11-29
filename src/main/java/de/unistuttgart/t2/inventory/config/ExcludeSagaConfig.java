@@ -1,10 +1,10 @@
 package de.unistuttgart.t2.inventory.config;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.*;
-
 import io.eventuate.tram.spring.consumer.jdbc.TramConsumerJdbcAutoConfiguration;
 import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Configuration that excludes saga related things.<br>

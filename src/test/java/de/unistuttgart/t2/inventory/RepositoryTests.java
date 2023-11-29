@@ -1,18 +1,17 @@
 package de.unistuttgart.t2.inventory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import de.unistuttgart.t2.inventory.repository.InventoryItem;
 import de.unistuttgart.t2.inventory.repository.ProductRepository;
 import de.unistuttgart.t2.inventory.repository.Reservation;
 import de.unistuttgart.t2.inventory.repository.ReservationRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Parent Class to all Test that use the repositories. Populates the repositories and offers some helpers for assertion.

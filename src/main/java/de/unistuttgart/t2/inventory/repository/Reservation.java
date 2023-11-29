@@ -1,17 +1,9 @@
 package de.unistuttgart.t2.inventory.repository;
 
+import jakarta.persistence.*;
+
 import java.time.Instant;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * A Reservation of a certain number of units.

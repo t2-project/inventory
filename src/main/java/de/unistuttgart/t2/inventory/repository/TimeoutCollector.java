@@ -1,15 +1,19 @@
 package de.unistuttgart.t2.inventory.repository;
 
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Periodically checks all reservations and deletes those whose time to life has been exceeded.<br>
@@ -62,7 +66,7 @@ public class TimeoutCollector {
     @PostConstruct
     public void schedulePeriodically() {
         if (taskRate > 0) {
-            taskScheduler.scheduleAtFixedRate(this::cleanup, taskRate);
+            taskScheduler.scheduleAtFixedRate(this::cleanup, Duration.ofMillis(taskRate));
         }
     }
 

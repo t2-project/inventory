@@ -1,10 +1,6 @@
 package de.unistuttgart.t2.inventory.repository;
 
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Random;
+
 /**
- * Generates new products into the product repository or or restocks existing ones. Generation is always triggered after
+ * Generates new products into the product repository or restocks existing ones. Generation is always triggered after
  * initialisation.
  * 
  * @author maumau
