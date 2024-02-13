@@ -87,11 +87,11 @@ curl localhost:8082/generate
 ```
 
 ## application properties
+
 (./ src/main/resources/application.properties)
 
 | property | read from env var | description |
 | -------- | ----------------- | ----------- |
-| spring.data.mongodb.uri | MONGO_HOST | host of the mongo db |
 | t2.inventory.size | T2_INVENTORY_SIZE | number of items to be generated into the inventory repository on start up |
 | t2.cart.url | T2_CART_URL | url of the cart service. must be provided to generate reservations on start up (because reservations and items in cart should be in sync) |
 | spring.profiles.active | SPRING_PROFILES_ACTIVE | set to 'saga' to have the full saga experience. set to 'test' to run inventory solely as provider of items (no saga) |
