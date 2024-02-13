@@ -13,7 +13,7 @@ import java.util.Date;
  * @author maumau
  */
 @Entity
-@Table(name = "reservations")
+@Table(name = "reservations", schema = "inventory")
 public class Reservation {
 
     @Id
@@ -27,7 +27,7 @@ public class Reservation {
     @Column(name = "units")
     private int units;
 
-    @Column(name = "userId")
+    @Column(name = "user_id")
     private String userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
