@@ -51,7 +51,7 @@ There are no endpoints to access the reservations.
 An exemplary request to GET get the product with id "foo":
 
 ```sh
-curl localhost:8082/inventory/foo
+curl http://localhost:8082/inventory/foo
 ```
 Response:
 
@@ -63,10 +63,10 @@ Response:
  "price" : 0.6923181656954707,
  "_links" : {
  "self" : {
- "href" : "http://inventory-cs/inventory/foo"
+ "href" : "http://inventory/inventory/foo"
  },
  "inventory" : {
- "href" : "http://inventory-cs/inventory/foo"
+ "href" : "http://inventory/inventory/foo"
  }
  }
 }
@@ -77,13 +77,13 @@ Response:
 If all items are sold out, this is how you restock all of them.
 
 ```sh
-curl localhost:8082/restock
+curl http://localhost:8082/restock
 ```
 
 If there are no products in the inventory (not as in '0 units of a product' but as in 'there is no product at all'), do this to generate new products.
 
 ```sh
-curl localhost:8082/generate
+curl http://localhost:8082/generate
 ```
 
 ## application properties
