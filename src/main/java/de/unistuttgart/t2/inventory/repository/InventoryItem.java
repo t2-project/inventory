@@ -44,7 +44,7 @@ public class InventoryItem {
     @JsonProperty("price")
     private final double price;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonProperty("reservations")
     private final List<Reservation> reservations;
 

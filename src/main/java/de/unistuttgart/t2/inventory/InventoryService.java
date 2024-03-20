@@ -19,13 +19,11 @@ import java.util.NoSuchElementException;
 public class InventoryService {
 
     private final ProductRepository productRepository;
-    private final ReservationRepository reservationRepository;
 
     public InventoryService(@Autowired ProductRepository productRepository,
         @Autowired ReservationRepository reservationRepository) {
         assert productRepository != null && reservationRepository != null;
         this.productRepository = productRepository;
-        this.reservationRepository = reservationRepository;
     }
 
     /**
@@ -39,13 +37,6 @@ public class InventoryService {
             item.commitReservation(sessionId);
         }
         productRepository.saveAll(items);
-
-        List<Reservation> reservations = reservationRepository.findAll();
-        for (Reservation reservation : reservations) {
-            if (reservation.getUserId().equals(sessionId)) {
-                reservationRepository.delete(reservation);
-            }
-        }
     }
 
     /**
@@ -57,16 +48,8 @@ public class InventoryService {
         List<InventoryItem> items = productRepository.findAll();
         for (InventoryItem item : items) {
             item.deleteReservation(sessionId);
-
         }
         productRepository.saveAll(items);
-
-        List<Reservation> reservations = reservationRepository.findAll();
-        for (Reservation reservation : reservations) {
-            if (reservation.getUserId().equals(sessionId)) {
-                reservationRepository.delete(reservation);
-            }
-        }
     }
 
     /**
