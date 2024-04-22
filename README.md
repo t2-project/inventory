@@ -97,7 +97,9 @@ curl http://localhost:8082/generate
 | spring.profiles.active | SPRING_PROFILES_ACTIVE | set to 'saga' to have the full saga experience. set to 'test' to run inventory solely as provider of items (no saga) |
 | t2.inventory.TTL | T2_INVENTORY_TTL | time to live of reservations (in seconds) |
 | t2.inventory.taskRate | T2_INVENTORY_TASKRATE | rate at which the inventory checks for items that exceeded their TTL (in milliseconds) |
-setting this to less or equal than zero disables the collection of expired cart entries.
+| t2.inventory.setUnitsToMax | T2_INVENTORY_SET_UNITS_TO_MAX | boolean value. if true all units will be set to max integer. helpful for load testing scenarios |
+
+Setting either `TTL` or `taskrate` to a value less or equal to zero disables the collection of expired entries.
 
 | property | read from env var | description |
 | -------- | ----------------- | ----------- |

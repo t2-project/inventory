@@ -31,7 +31,7 @@ public class ControllerTest extends RepositoryTests {
 
     @BeforeEach
     void prepareController() {
-        controller = new InventoryController(inventoryService, new DataGenerator(productRepository, 0));
+        controller = new InventoryController(inventoryService, new DataGenerator(productRepository, 0, false));
     }
 
     @Test
