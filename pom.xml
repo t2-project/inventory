@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <groupId>de.unistuttgart.t2</groupId>
+        <artifactId>microservices</artifactId>
+        <version>${revision}</version>
     </parent>
-    <groupId>de.unistuttgart.t2</groupId>
+
     <artifactId>inventory</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>inventory</name>
     <description>inventory for T2-Project</description>
-    <properties>
-        <java.version>17</java.version>
-    </properties>
+    <packaging>jar</packaging>
 
     <dependencies>
+        <!-- internal dependencies -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+
+        <!-- Spring -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -43,64 +47,46 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${env.T2_SPRINGDOC_VERSION}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
-            <version>${env.T2_SPRINGDOC_VERSION}</version>
         </dependency>
-
 
         <!-- SAGA THINGS -->
         <dependency>
             <groupId>io.eventuate.tram.core</groupId>
             <artifactId>eventuate-tram-spring-events</artifactId>
-            <version>${env.T2_TRAM_VERSION}</version>
         </dependency>
         <dependency>
             <groupId>io.eventuate.tram.core</groupId>
             <artifactId>eventuate-tram-spring-commands</artifactId>
-            <version>${env.T2_TRAM_VERSION}</version>
         </dependency>
         <dependency>
             <groupId>io.eventuate.tram.core</groupId>
             <artifactId>eventuate-tram-spring-messaging</artifactId>
-            <version>${env.T2_TRAM_VERSION}</version>
         </dependency>
         <dependency>
             <groupId>io.eventuate.tram.sagas</groupId>
             <artifactId>eventuate-tram-sagas-spring-participant</artifactId>
-            <version>${env.T2_TRAM_PARTICIPANT_VERSION}</version>
         </dependency>
 
         <!-- FOR THE CDC -->
         <dependency>
             <groupId>io.eventuate.tram.core</groupId>
             <artifactId>eventuate-tram-spring-producer-jdbc</artifactId>
-            <version>${env.T2_TRAM_VERSION}</version>
         </dependency>
         <dependency>
             <groupId>io.eventuate.tram.core</groupId>
             <artifactId>eventuate-tram-spring-consumer-jdbc</artifactId>
-            <version>${env.T2_TRAM_VERSION}</version>
         </dependency>
         <dependency>
             <groupId>io.eventuate.tram.core</groupId>
             <artifactId>eventuate-tram-spring-consumer-kafka</artifactId>
-            <version>${env.T2_TRAM_VERSION}</version>
         </dependency>
         <dependency>
             <groupId>io.eventuate.tram.core</groupId>
             <artifactId>eventuate-tram-spring-optimistic-locking</artifactId>
-            <version>${env.T2_TRAM_VERSION}</version>
-        </dependency>
-
-        <!-- t2 common things -->
-        <dependency>
-            <groupId>de.unistuttgart.t2</groupId>
-            <artifactId>common</artifactId>
-            <version>${env.T2_COMMON_VERSION}</version>
         </dependency>
 
         <!-- embedded database for unit tests -->
@@ -114,7 +100,6 @@
         <dependency>
             <groupId>io.opentracing.contrib</groupId>
             <artifactId>opentracing-spring-jaeger-cloud-starter</artifactId>
-            <version>${env.T2_JAEGER_VERSION}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -123,7 +108,6 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
-            <version>${env.T2_MICROMETER_VERSION}</version>
         </dependency>
     </dependencies>
 
@@ -134,7 +118,7 @@
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/application*.properties</include>
+                    <include>**/application*.yaml</include>
                 </includes>
             </resource>
         </resources>
@@ -146,21 +130,6 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${env.T2_JACOCO_VERSION}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
